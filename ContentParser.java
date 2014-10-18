@@ -1,0 +1,96 @@
+import java.net.URL;
+import java.util.LinkedList;
+
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+public class ContentParser{
+	public LinkedList<linkPage> links;
+	public Document doc;
+	String linkHead = "http://en.wikipedia.org";
+	int linkCount;
+	WordsParser wordsparser;
+	
+	ContentParser(){
+		wordsparser = new WordsParser();
+		
+		links = new LinkedList<linkPage>();
+		String firstLink ="/wiki/Wikipedia";
+		String title = "Wikipedia";
+		links.add(new linkPage(firstLink, title));
+		
+		linkHead = "http://en.wikipedia.org";
+		doc = null;
+		linkCount = 0;
+	}
+	public void getContentDoc(){
+		try {
+//			Elements el = ;
+//			doc.appendChild(el);
+			
+			while(!links.isEmpty() && linkCount<1){
+				linkPage curpage = links.poll();
+				URL url = new URL(linkHead+curpage.link);
+//				URLConnection conn = url.openConnection();
+				Document tmpdoc = Jsoup.parse(url, 10000);
+//				Document subdoc = dBuilder.newDocument();
+				
+				getTextContent(tmpdoc, curpage);
+				
+				linkCount++;
+//				System.out.println(linkCount);
+
+			}
+			wordsparser.printDic2Console();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	public void getTextContent(Document tmpdoc, linkPage curpage){
+		try {
+			Elements ps= tmpdoc.select("p");
+			
+/*			Element supEl = subdoc.createElement("textTitle");
+			supEl.setAttribute("name", curpage.title);
+			System.out.println(curpage.title);
+			subdoc.appendChild(supEl);*/
+			for(int i=0; i<ps.size(); i++){
+//				System.out.println(nl.getLength());
+				Element p = ps.get(i);
+				String text = p.text();
+//				System.out.println(text);
+				addlinktoQueue(p);
+								
+				wordsparser.getWords(text);
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void addlinktoQueue(Element p){
+		Elements tmplinks = p.select("a");
+		for(int i=0; i<tmplinks.size(); i++){
+			Element link = tmplinks.get(i);
+			String tmpLink = link.attr("href");
+			if(tmpLink != null){
+				linkPage linkpage = new linkPage();
+				if(tmpLink.length() > 6 && (tmpLink.substring(0, 6)).equals("/wiki/")){
+					linkpage.link = tmpLink;
+					String attrTitle = link.attr("title");
+					if(attrTitle != null)
+						linkpage.title = attrTitle;
+					links.add(linkpage);
+				}
+			}
+		}
+	}
+}
+
