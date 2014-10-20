@@ -31,19 +31,21 @@ public class ContentParser{
 //			Elements el = ;
 //			doc.appendChild(el);
 			
-			while(!links.isEmpty() && linkCount<1){
+			while(!links.isEmpty() && linkCount<20){
 				linkPage curpage = links.poll();
 				URL url = new URL(linkHead+curpage.link);
 //				URLConnection conn = url.openConnection();
 				Document tmpdoc = Jsoup.parse(url, 10000);
 //				Document subdoc = dBuilder.newDocument();
-				
+				if(linkCount ==1 )
+					System.out.println(linkHead+curpage.link);
 				getTextContent(tmpdoc, curpage);
 				
 				linkCount++;
 //				System.out.println(linkCount);
 
 			}
+//			wordsparser.printWords("wiki/acronymDic");
 			wordsparser.printDic2Console();
 			
 		} catch (Exception e) {
