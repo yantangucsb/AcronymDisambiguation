@@ -3,17 +3,18 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.*;
 
 import edu.stanford.nlp.ling.Label;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
@@ -42,14 +43,14 @@ public class WordsParser{
 	private void loadAcronyms() {
 		BufferedReader br = null;
 	    try {
-	    	br = new BufferedReader(new FileReader("wiki/acronymDic"));
-	        StringBuilder sb = new StringBuilder();
+	    	br = new BufferedReader(new FileReader("wiki/acronym"));
+//	        StringBuilder sb = new StringBuilder();
 	        String line = br.readLine();
 	        WordDic tmpword = new WordDic(line);
 	        add2Dic(tmpword);
 
 	        while (line != null) {
-	            sb.append(line);
+//	            sb.append(line);
 //	            sb.append(System.lineSeparator());
 	            WordDic tmpword1 = new WordDic(line);
 		        add2Dic(tmpword1);
@@ -149,8 +150,33 @@ public class WordsParser{
 	private void add2Dic(WordDic wd) {
 		if(words.containsKey(wd.name) == true)
 			return;
+		try {
+			URL url = new URL(ContentParser.linkHead+"/wiki/"+wd.name);
+			Document tmpdoc = Jsoup.parse(url, 10000);
+//			System.out.println("add to dic successfully");
+			if (tmpdoc != null){
+				if(!wd.getCandidates(tmpdoc))
+					wd.add2Expansions(getExpansion(wd));
+				
+//				System.out.println("add to dic successfully");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+//			e.printStackTrace();
+			wd.add2Expansions(getExpansion(wd));
+		}
 		words.put(wd.name, wd);
 		
+//		System.out.println(wd.name);
+		
+	}
+	
+	private Candidate getExpansion(WordDic wd) {
+		// TODO Auto-generated method stub
+		System.out.println("set expansion to acronym " + wd.name + " :");
+		Scanner in = new Scanner(System.in);
+		String expansion = in.nextLine();
+		return new Candidate(expansion);
 	}
 	boolean isCapital(String word){
 		for(int i=0; i<word.length(); i++){
@@ -171,6 +197,7 @@ public class WordsParser{
 		        writer.write((String)pairs.getKey()+"\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }
+		    System.out.println("Success to file");
 
 		}
 		catch ( Exception e)
@@ -187,5 +214,53 @@ public class WordsParser{
 		    {
 		    }
 		}
+	}
+	
+	public Document transformWords2XML(){
+		Document doc = Jsoup.parse("");
+		doc.html("");
+		
+		Element e = doc.appendElement("body");
+		Iterator<Entry<String, WordDic>> it = words.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	Map.Entry pairs = (Map.Entry)it.next();
+			Element ac = e.appendElement("acronym");
+			ac.attr("name", (String)pairs.getKey());
+			WordDic wd = (WordDic)pairs.getValue();
+			Iterator<Entry<String, Candidate>> it2 = wd.expansions.entrySet().iterator();
+			while(it2.hasNext()){
+				Map.Entry<String, Candidate> pairs2 = (Map.Entry<String, Candidate>) it2.next();
+				Element candidate = ac.appendElement("candidate");
+				candidate.attr("name", (String)pairs2.getKey());
+				//add feature
+			}
+		}
+	    return doc;
+	}
+	public void printXML2file(String filename) {
+		Document doc = transformWords2XML();
+		
+		BufferedWriter writer = null;
+		try
+		{
+		    writer = new BufferedWriter( new FileWriter(filename));
+		    writer.write(doc.toString());
+		    System.out.println("Success to XML file");
+
+		}
+		catch ( Exception e)
+		{
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}		
 	}
 }

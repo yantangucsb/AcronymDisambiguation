@@ -2,6 +2,7 @@ import java.net.URL;
 import java.util.LinkedList;
 
 
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,7 +11,7 @@ import org.jsoup.select.Elements;
 public class ContentParser{
 	public LinkedList<linkPage> links;
 	public Document doc;
-	String linkHead = "http://en.wikipedia.org";
+	static String linkHead = "http://en.wikipedia.org";
 	int linkCount;
 	WordsParser wordsparser;
 	
@@ -22,7 +23,6 @@ public class ContentParser{
 		String title = "Wikipedia";
 		links.add(new linkPage(firstLink, title));
 		
-		linkHead = "http://en.wikipedia.org";
 		doc = null;
 		linkCount = 0;
 	}
@@ -31,14 +31,14 @@ public class ContentParser{
 //			Elements el = ;
 //			doc.appendChild(el);
 			
-			while(!links.isEmpty() && linkCount<20){
+			while(!links.isEmpty() && linkCount<10){
 				linkPage curpage = links.poll();
 				URL url = new URL(linkHead+curpage.link);
 //				URLConnection conn = url.openConnection();
 				Document tmpdoc = Jsoup.parse(url, 10000);
 //				Document subdoc = dBuilder.newDocument();
-				if(linkCount ==1 )
-					System.out.println(linkHead+curpage.link);
+//				if(linkCount ==1 )
+//					System.out.println(curpage.link);
 				getTextContent(tmpdoc, curpage);
 				
 				linkCount++;
@@ -46,7 +46,8 @@ public class ContentParser{
 
 			}
 //			wordsparser.printWords("wiki/acronymDic");
-			wordsparser.printDic2Console();
+//			wordsparser.printDic2Console();
+			wordsparser.printXML2file("wiki/acronymXML");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -84,7 +85,7 @@ public class ContentParser{
 			String tmpLink = link.attr("href");
 			if(tmpLink != null){
 				linkPage linkpage = new linkPage();
-				if(tmpLink.length() > 6 && (tmpLink.substring(0, 6)).equals("/wiki/")){
+				if(isEntity(tmpLink)){
 					linkpage.link = tmpLink;
 					String attrTitle = link.attr("title");
 					if(attrTitle != null)
@@ -93,6 +94,14 @@ public class ContentParser{
 				}
 			}
 		}
+	}
+	private boolean isEntity(String tmpLink) {
+		if(tmpLink.length() > 6 && (tmpLink.substring(0, 6)).equals("/wiki/")){
+			if(tmpLink.length() > 10 && (tmpLink.substring(0, 10).equals("/wiki/File") || tmpLink.substring(0, 10).equals("/wiki/Help")))
+				return false;
+			return true;
+		}
+		return false;
 	}
 }
 
