@@ -1,3 +1,5 @@
+package DicGenerator;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.jsoup.select.Elements;
@@ -6,13 +8,26 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 public class WordDic{
-	String name;
-	HashMap<String, Candidate> expansions;
-	WordDic(String name){
+	public String name;
+	public HashMap<String, Candidate> expansions;
+	public WordDic(String name){
 		this.name = name;
 		expansions = new HashMap<String, Candidate>();
 	}
 	
+	public WordDic(String text, ArrayList<Candidate> candis) {
+		name = text;
+		System.out.println(name);
+		expansions = new HashMap<String, Candidate>();
+		for(int i=0; i<candis.size(); i++){
+			if(expansions.containsKey(candis.get(i).name))
+				continue;
+			expansions.put(candis.get(i).name, candis.get(i));
+			System.out.println(candis.get(i).name);
+		}
+//		System.out.println("Successfully");
+	}
+
 	public boolean getCandidates(Document tmpdoc) {
 		try {
 			Elements ps = tmpdoc.select("p");

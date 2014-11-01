@@ -3,10 +3,17 @@ import java.util.LinkedList;
 
 
 
+
+
+
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import DicGenerator.PrintDic;
+import DicGenerator.linkPage;
 
 public class ContentParser{
 	public LinkedList<linkPage> links;
@@ -47,7 +54,7 @@ public class ContentParser{
 			}
 //			wordsparser.printWords("wiki/acronymDic");
 //			wordsparser.printDic2Console();
-			wordsparser.printXML2file("wiki/acronymXML");
+			PrintDic.printXML2file(wordsparser.words, "wiki/acronymDic");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
