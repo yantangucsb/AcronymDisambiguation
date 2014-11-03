@@ -29,4 +29,7 @@ public class Candidate{
 		name = text;
 		
 	}
+	public String getName(){
+		return name;
+	}
 }

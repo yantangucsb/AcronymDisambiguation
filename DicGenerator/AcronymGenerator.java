@@ -17,42 +17,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class AcronymGenerator{
-	HashMap<String, WordDic> acronyms;
-	String acronymSourceLink="http://www.abbreviations.com/";
+//	HashMap<String, WordDic> acronyms;
+	HashMap<String, String> acronyms;
+	public static String acronymSourceLink="http://www.abbreviations.com/";
 	public AcronymGenerator(){
-		acronyms = new HashMap<String, WordDic>();
-		loadWords();
+//		acronyms = new HashMap<String, WordDic>();
+//		loadWords();
+		acronyms = new HashMap<String, String>();
 	}
-	private void loadWords() {
-		BufferedReader br = null;
-	    try {
-	    	File file = new File("wiki/ori_log");
-	    	Document tmpdoc = Jsoup.parse(file, "UTF-8");
-	    	Elements eles = tmpdoc.select("acronym");
-	    	for(int i=0; i<eles.size(); i++){
-	    		Element ele = eles.get(i);
-	    		WordDic wd = new WordDic(ele.attr("name"));
-	    		Elements features = ele.select("candidate");
-	    		for(int j=0; j<features.size(); j++){
-	    			Element fea = features.get(j);
-	    			Candidate can = new Candidate(fea.attr("name"));
-	    			wd.add2Expansions(can);
-	    		}
-	    		acronyms.put(wd.name, wd);
-	    	}
-	        
-	    }catch(Exception e){
-	    	
-	    }finally {
-	        try {
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    }
-		
-	}
+	
 	public void getAcronyms(){
 		try {
 			LinkedList<String> links = new LinkedList<String>();
@@ -61,14 +34,14 @@ public class AcronymGenerator{
 				links.add(tmp);
 			}
 			int count = 0;
-			while(!links.isEmpty() && count <1){
+			while(!links.isEmpty()){
 				String curpage = links.poll();
 				URL url = new URL(curpage);
 				Document tmpdoc = Jsoup.parse(url, 10000);
 				scanWords(tmpdoc);
 				count++;
 			}
-			PrintDic.printXML2file(acronyms, "wiki/ori_log");
+			PrintDic.print2OriFile(acronyms, "wiki/ori_log");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -93,9 +66,11 @@ public class AcronymGenerator{
 				continue;
 			if(acronyms.containsKey(curlink.text()))
 				continue;
-			ArrayList<Candidate> candis= getWordExpansion(curlink.attr("href"));
+/*			ArrayList<Candidate> candis= getWordExpansion(curlink.attr("href"));
 			if(candis !=null && candis.size() != 0)
-				add2Dic(new WordDic(curlink.text(), candis));
+				add2Dic(new WordDic(curlink.text(), candis));*/
+			add2Dic(curlink.text(), curlink.attr("href"));
+			System.out.println(curlink.text() + "+" + curlink.attr("href"));
 		}
 	}
 	
@@ -114,8 +89,13 @@ public class AcronymGenerator{
 			return true;
 		return false;
 	}
-	private void add2Dic(WordDic wd) {
+/*	private void add2Dic(WordDic wd) {
 		acronyms.put(wd.name, wd);
+	}*/
+	private void add2Dic(String text, String link){
+		if(acronyms.containsKey(text))
+			return;
+		acronyms.put(text, link);
 	}
 	private ArrayList<Candidate> getWordExpansion(String link) {
 		ArrayList<Candidate> candis = new ArrayList<Candidate>();
@@ -123,7 +103,7 @@ public class AcronymGenerator{
 		if(link.charAt(0) == '/')
 			link = link.substring(1, link.length());
 		String curlink = acronymSourceLink+ link + "&p=99999";
-		URL url;
+//		URL url;
 		try {
 			Document expansionHtml = Jsoup.connect(curlink).userAgent("Mozilla").get();
 			Elements tables = expansionHtml.select("table");

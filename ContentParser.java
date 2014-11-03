@@ -38,7 +38,7 @@ public class ContentParser{
 //			Elements el = ;
 //			doc.appendChild(el);
 			
-			while(!links.isEmpty() && linkCount<10){
+			while(!links.isEmpty() && wordsparser.trainData.size()<=500){
 				linkPage curpage = links.poll();
 				URL url = new URL(linkHead+curpage.link);
 //				URLConnection conn = url.openConnection();
@@ -54,7 +54,8 @@ public class ContentParser{
 			}
 //			wordsparser.printWords("wiki/acronymDic");
 //			wordsparser.printDic2Console();
-			PrintDic.printXML2file(wordsparser.words, "wiki/acronymDic");
+//			PrintDic.printXML2file(wordsparser.words, "wiki/acronymDic");
+			PrintDic.printTrainData(wordsparser.trainData, "wiki/traindata");
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
