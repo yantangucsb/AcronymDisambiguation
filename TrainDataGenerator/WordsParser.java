@@ -1,3 +1,4 @@
+package TrainDataGenerator;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -23,13 +24,7 @@ import DicGenerator.AcronymGenerator;
 import DicGenerator.Candidate;
 import DicGenerator.PrintDic;
 import DicGenerator.WordDic;
-import edu.stanford.nlp.ling.Label;
-import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
-import edu.stanford.nlp.trees.GrammaticalStructure;
-import edu.stanford.nlp.trees.GrammaticalStructureFactory;
-import edu.stanford.nlp.trees.Tree;
-import edu.stanford.nlp.trees.TreebankLanguagePack;
-import edu.stanford.nlp.trees.TypedDependency;
+
 
 public class WordsParser{
 	public String para;
@@ -87,37 +82,7 @@ public class WordsParser{
 		return false;
 	}
 	
-	private String[] sentenceParser(String text) {
-		LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
-//	    String sent = "This: is an (easy) sentence.";
-	    Tree parse = lp.parse(text);
-//	    parse.pennPrint();
-//	    System.out.println();
-	    
-	    TreebankLanguagePack tlp = lp.getOp().langpack();
-	    GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
-	    GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
-	    List<TypedDependency> tdl = gs.typedDependenciesCCprocessed();
-//	    System.out.println(tdl);
-//	    System.out.println();
-	    
-//	    System.out.println("The words of the sentence:");
-	    String[] tmpwords = new String[parse.yield().size()];
-	    int i=0;
-	      for (Label lab : parse.yield()) {
-	        
-//	          System.out.println(lab.toString());
-	    	  String tmpword = lab.toString();
-	    	  tmpwords[i++] = tmpword;
-	    	  
-	       
-	      }
-//	      System.out.println();
-	      
-//	      System.out.println(parse.taggedYield());
-//	      System.out.println();
-		return tmpwords;
-	}
+	
 /*	public void printDic2Console() {
 		Iterator<Entry<String, WordDic>> it = words.entrySet().iterator();
 		System.out.println(words.size());

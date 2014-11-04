@@ -1,3 +1,4 @@
+package TrainDataGenerator;
 import java.net.URL;
 import java.util.LinkedList;
 
@@ -22,7 +23,7 @@ public class ContentParser{
 	int linkCount;
 	WordsParser wordsparser;
 	
-	ContentParser(){
+	public ContentParser(){
 		wordsparser = new WordsParser();
 		
 		links = new LinkedList<linkPage>();

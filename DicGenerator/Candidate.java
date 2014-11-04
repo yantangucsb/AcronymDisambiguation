@@ -2,6 +2,8 @@ package DicGenerator;
 
 import java.util.ArrayList;
 
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+
 public class Candidate{
 	String name;
 	ArrayList<String> feature;
@@ -31,5 +33,11 @@ public class Candidate{
 	}
 	public String getName(){
 		return name;
+	}
+	
+	private void sentenceParser(String text) {
+		 MaxentTagger tagger = new MaxentTagger("taggers/left3words-distsim-wsj-0-18.tagger");
+		 String tagged = tagger.tagString(text);
+		 System.out.println(tagged);
 	}
 }

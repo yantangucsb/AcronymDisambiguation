@@ -1,3 +1,4 @@
+import TrainDataGenerator.ContentParser;
 import DicGenerator.AcronymGenerator;
 
 public class GetWebContent {
