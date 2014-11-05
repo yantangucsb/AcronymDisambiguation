@@ -22,9 +22,11 @@ public class ContentParser{
 	static String linkHead = "http://en.wikipedia.org";
 	int linkCount;
 	WordsParser wordsparser;
+	FeatureGenerator fg;
 	
 	public ContentParser(){
 		wordsparser = new WordsParser();
+		fg = new FeatureGenerator();
 		
 		links = new LinkedList<linkPage>();
 		String firstLink ="/wiki/Wikipedia";
@@ -56,7 +58,8 @@ public class ContentParser{
 //			wordsparser.printWords("wiki/acronymDic");
 //			wordsparser.printDic2Console();
 //			PrintDic.printXML2file(wordsparser.words, "wiki/acronymDic");
-			PrintDic.printTrainData(wordsparser.trainData, "wiki/traindata");
+//			PrintDic.printTrainData(wordsparser.trainData, "wiki/traindata");
+			fg.parseSentence(wordsparser.words, wordsparser.trainData);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

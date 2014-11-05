@@ -97,6 +97,7 @@ public class AcronymGenerator{
 			return;
 		acronyms.put(text, link);
 	}
+	/*
 	private ArrayList<Candidate> getWordExpansion(String link) {
 		ArrayList<Candidate> candis = new ArrayList<Candidate>();
 		int index = 0;
@@ -164,7 +165,8 @@ public class AcronymGenerator{
 		}
 		return candis;
 	}
-	private boolean isExistWiki(String text) {
+	*/
+/*	private boolean isExistWiki(String text) {
 		text.replaceAll(" ", "_");
 		String link = "http://en.wikipedia.org" + "/wiki/" + text;
 		try {
@@ -177,5 +179,5 @@ public class AcronymGenerator{
 			return false;
 		}
 		return false;
-	}
+	}*/
 }

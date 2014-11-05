@@ -166,4 +166,39 @@ public class PrintDic{
 		    }
 		}
 	}
+	
+	public static void loadTrainData(HashMap<String, String> words, HashMap<String, ArrayList<String>> trainData) {
+		// TODO Auto-generated method stub
+		String filename = "traindata";
+		BufferedReader br = null;
+		try
+		{
+			br = new BufferedReader( new FileReader(filename));
+		    String line = br.readLine();
+	        while (line != null) {
+	        	String[] tmp = line.split("###");
+	        	ArrayList<String> al = new ArrayList<String>();
+	        	for(int i=1; i<tmp.length; i++) {
+	        		al.add(tmp[i]);
+	        	}
+	        	trainData.put(tmp[0], al);
+	            line = br.readLine();
+	        }
+
+		}
+		catch ( Exception e)
+		{
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( br != null)
+		        br.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
+	}
 }

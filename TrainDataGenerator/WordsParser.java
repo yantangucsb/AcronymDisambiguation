@@ -37,6 +37,7 @@ public class WordsParser{
 		words = new HashMap<String, String>();
 		trainData = new HashMap<String, ArrayList<String>>();
 		PrintDic.loadWords(words);
+		PrintDic.loadTrainData(words, trainData);
 /*		stopWord = new ArrayList<String>();
 		stopWord.add("TV"); //convert to read from file
 		stopWord.add("II");
