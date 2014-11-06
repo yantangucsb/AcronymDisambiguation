@@ -55,17 +55,5 @@ public class Candidate{
 			return false;
 		return true;
 	}
-
-	public void tagText() {
-		text = setTagger(text);
-		
-	}
-	
-	private String setTagger(String text) {
-		 MaxentTagger tagger = new MaxentTagger("taggers/left3words-distsim-wsj-0-18.tagger");
-		 String tagged = tagger.tagString(text);
-		 return tagged;
-//		 System.out.println(tagged);
-	}
 	
 }

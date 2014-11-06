@@ -1,6 +1,9 @@
 package DicGenerator;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jsoup.select.Elements;
 import org.jsoup.Jsoup;
@@ -8,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import Features.Feature;
+import Features.SameNounPercen;
 
 public class WordDic{
 	private String name;
@@ -20,8 +24,14 @@ public class WordDic{
 		expansions = new HashMap<String, Candidate>();
 		trainText = new ArrayList<Candidate>();
 		features = new ArrayList<Feature>();
+		addExistFeatures();
 	}
 	
+	private void addExistFeatures() {
+		features.add(new SameNounPercen());
+		features.add(new SameNounPercen());
+	}
+
 	public WordDic(String text, ArrayList<Candidate> candis) {
 		name = text;
 		System.out.println(name);
@@ -90,7 +100,14 @@ public class WordDic{
 
 	public void getfeatures() {
 		for(Candidate trainPara : trainText) {
-			for(Candidate candi : )
+			Iterator<Entry<String, Candidate>> it = expansions.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry<String, Candidate> pairs = it.next();
+				Candidate candi = pairs.getValue();
+				for(Feature f: features){
+					f.setFeature(trainPara.text, candi.text);
+				}
+			}
 		}
 	}
 }

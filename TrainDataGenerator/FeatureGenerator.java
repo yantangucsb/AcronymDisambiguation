@@ -29,16 +29,7 @@ public class FeatureGenerator {
 	    	ArrayList<Candidate> candis = getWordExpansion(words.get(name)); //what if no expansions
 	    	if(candis != null){
 	    		WordDic newWord = new WordDic(name, candis);
-	    		
-	    		if(candis.size() > 1){
-	    			for(Candidate candi : candis){
-	    				candi.tagText();
-	    			}
-	    		}
 	    		ArrayList<Candidate> trainpara = (ArrayList<Candidate>) pairs.getValue();
-	    		for(Candidate candi : trainpara){
-	    			candi.tagText();
-	    		}
 	    		newWord.setTrainText(trainpara);
 	    		wordDic.add(newWord);
 	    	}else{
