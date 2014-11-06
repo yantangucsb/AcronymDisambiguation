@@ -7,12 +7,19 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import Features.Feature;
+
 public class WordDic{
-	public String name;
-	public HashMap<String, Candidate> expansions;
+	private String name;
+	private HashMap<String, Candidate> expansions;
+	private ArrayList<Candidate> trainText;
+	private ArrayList<Feature> features;
+	
 	public WordDic(String name){
 		this.name = name;
 		expansions = new HashMap<String, Candidate>();
+		trainText = new ArrayList<Candidate>();
+		features = new ArrayList<Feature>();
 	}
 	
 	public WordDic(String text, ArrayList<Candidate> candis) {
@@ -70,5 +77,20 @@ public class WordDic{
 			return;
 		temp.getFeature();
 		expansions.put(temp.name, temp);		
+	}
+
+	public void setTrainText(ArrayList<Candidate> trainpara) {
+		trainText = trainpara;
+		
+	}
+
+	public HashMap<String, Candidate> getExpansions() {
+		return expansions;
+	}
+
+	public void getfeatures() {
+		for(Candidate trainPara : trainText) {
+			for(Candidate candi : )
+		}
 	}
 }

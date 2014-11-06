@@ -59,7 +59,8 @@ public class ContentParser{
 //			wordsparser.printDic2Console();
 //			PrintDic.printXML2file(wordsparser.words, "wiki/acronymDic");
 //			PrintDic.printTrainData(wordsparser.trainData, "wiki/traindata");
-			fg.parseSentence(wordsparser.words, wordsparser.trainData);
+			fg.findExpansions(wordsparser.words, wordsparser.trainData);
+			fg.genetrainDataFeature();
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -70,19 +71,12 @@ public class ContentParser{
 	public void getTextContent(Document tmpdoc, linkPage curpage){
 		try {
 			Elements ps= tmpdoc.select("p");
-			
-/*			Element supEl = subdoc.createElement("textTitle");
-			supEl.setAttribute("name", curpage.title);
-			System.out.println(curpage.title);
-			subdoc.appendChild(supEl);*/
 			for(int i=0; i<ps.size(); i++){
 //				System.out.println(nl.getLength());
 				Element p = ps.get(i);
-				String text = p.text();
-//				System.out.println(text);
 				addlinktoQueue(p);
 								
-				wordsparser.getWords(text);
+				
 			}
 			
 		} catch (Exception e) {
@@ -103,6 +97,7 @@ public class ContentParser{
 					if(attrTitle != null)
 						linkpage.title = attrTitle;
 					links.add(linkpage);
+					wordsparser.getWords(link.text(), linkpage.title, p.text());
 				}
 			}
 		}

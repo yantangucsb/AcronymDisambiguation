@@ -24,18 +24,19 @@ import DicGenerator.AcronymGenerator;
 import DicGenerator.Candidate;
 import DicGenerator.PrintDic;
 import DicGenerator.WordDic;
+import DicGenerator.linkPage;
 
 
 public class WordsParser{
 	public String para;
 	HashMap<String, String> words;
-	public HashMap<String, ArrayList<String>> trainData;
+	public HashMap<String, ArrayList<Candidate>> trainData;
 	ArrayList<String> stopWord;
 	int count;
 	WordsParser(){
 		count=0;
 		words = new HashMap<String, String>();
-		trainData = new HashMap<String, ArrayList<String>>();
+		trainData = new HashMap<String, ArrayList<Candidate>>();
 		PrintDic.loadWords(words);
 		PrintDic.loadTrainData(words, trainData);
 /*		stopWord = new ArrayList<String>();
@@ -46,18 +47,15 @@ public class WordsParser{
 		
 	}
 	
-	void getWords(String text){
-		String[] tmpwords = text.split(" ");
-		para = text;
-		for(int i=0; i<tmpwords.length; i++){
-			String tmpword = tmpwords[i];
-			addAcronym(tmpword);
-		}
-//		printDic2Console();
+	void getWords(String text, String title, String string){
+		if(!words.containsKey(text))
+			return;
+		Candidate trainpara = new Candidate(title, string);
+		add2TrainData(text, trainpara);
 	}
 	
-	void addAcronym(String tmpword) {
-//		System.out.println(tmpword.charAt(0));
+/*	void addAcronym(String tmpword) {
+		System.out.println(tmpword.charAt(0));
 		if(tmpword.length()<=1)
 			return;
 		if(tmpword.charAt(0) == '(')
@@ -66,11 +64,11 @@ public class WordsParser{
 			tmpword = tmpword.substring(0, tmpword.length()-1);
 		if(tmpword.length()<=1)
 			return;
-/*		if(!isCapital(tmpword))
+		if(!isCapital(tmpword))
 			return;
 		
 		if(isStopWord(tmpword))
-			return;*/
+			return;
 		if(!words.containsKey(tmpword))
 			return;
 		add2TrainData(tmpword);
@@ -81,7 +79,7 @@ public class WordsParser{
 		if(stopWord.contains(tmpword))
 			return true;
 		return false;
-	}
+	}*/
 	
 	
 /*	public void printDic2Console() {
@@ -95,73 +93,13 @@ public class WordsParser{
 		
 	}*/
 	
-	private void add2TrainData(String wd) {
-		if(trainData.containsKey(wd)){
-			trainData.get(wd).add(para);
+	private void add2TrainData(String text, Candidate candi) {
+		if(trainData.containsKey(candi)){
+			trainData.get(candi).add(candi);
 		}else{
-			ArrayList<String> paras = new ArrayList<String>();
-			paras.add(para);
-			trainData.put(wd, paras);
+			ArrayList<Candidate> paras = new ArrayList<Candidate>();
+			paras.add(candi);
+			trainData.put(text, paras);
 		}
 	}
-	private void getExpansions(String wd) {
-		try {
-			String curlink = AcronymGenerator.acronymSourceLink + words.get(wd) + "&p=99999";
-			Document expansionDoc = Jsoup.connect(curlink).userAgent("Mozilla").get();
-			Elements tables = expansionDoc.select("table");
-//			System.out.println(tables.size());
-			if(tables.size() == 0)
-				return;
-			WordDic wordDic = new WordDic(wd);
-			
-			Elements rows = (tables.get(0)).select("td");
-//			System.out.println("rows: "+ rows.size());
-			for(int i=0; i<rows.size(); i++){
-				Element curAcronym = rows.get(i);
-				String classTag = curAcronym.attr("class");
-				
-				if(!classTag.equals("tal dx"))
-					continue;
-				Elements expans = curAcronym.select("p");
-//				System.out.println(expans.size());
-				Candidate cur = new Candidate();
-				boolean hasExpansion = false;
-				for(int j=0; j<expans.size(); j++){
-					Element curp = expans.get(j);
-					
-					if(curp.attr("class").equals("desc")){
-						
-//						if(isExistWiki(curp.text())){
-						if(hasNonAscii(curp.text()))
-							break;
-						cur.setName(curp.text());
-//							System.out.println("Get an expansion:" + curp.text());
-						hasExpansion = true;
-//						System.out.println("Test expansion:" + cur.name);
-					}else if(curp.attr("class").equals("path")){
-						Elements ps = curp.select("a");
-						for(int k=0; k<ps.size(); k++){
-							cur.addTags(ps.get(k).text());
-						}
-					}
-				}
-				if(hasExpansion){
-					wordDic.expansions.put(cur.getName(), cur);
-				}
-				
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-//			e.printStackTrace();
-			return;
-		}		
-	}
-	
-	private boolean hasNonAscii(String s) {
-		CharsetEncoder asciiEncoder = Charset.forName("US-ASCII").newEncoder();
-		if(!asciiEncoder.canEncode(s))
-			return true;
-		return false;
-	}	
-	
 }

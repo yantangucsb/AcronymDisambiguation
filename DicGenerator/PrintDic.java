@@ -27,7 +27,7 @@ public class PrintDic{
 			Element ac = e.appendElement("acronym");
 			ac.attr("name", (String)pairs.getKey());
 			WordDic wd = (WordDic)pairs.getValue();
-			Iterator<Entry<String, Candidate>> it2 = wd.expansions.entrySet().iterator();
+			Iterator<Entry<String, Candidate>> it2 = wd.getExpansions().entrySet().iterator();
 			while(it2.hasNext()){
 				Map.Entry<String, Candidate> pairs2 = (Map.Entry<String, Candidate>) it2.next();
 				Element candidate = ac.appendElement("candidate");
@@ -132,20 +132,21 @@ public class PrintDic{
 	    }
 		
 	}
-	public static void printTrainData(HashMap<String, ArrayList<String>> trainData, String filename) {
+	public static void printTrainData(HashMap<String, ArrayList<Candidate>> trainData, String filename) {
 		// TODO Auto-generated method stub
 		BufferedWriter writer = null;
 		try
 		{
 		    writer = new BufferedWriter( new FileWriter(filename));
-		    Iterator<Entry<String, ArrayList<String>>> it = trainData.entrySet().iterator();
+		    Iterator<Entry<String, ArrayList<Candidate>>> it = trainData.entrySet().iterator();
 		    while (it.hasNext()) {
 		        Map.Entry pairs = (Map.Entry)it.next();
 		        writer.write((String)pairs.getKey());
-		        for(String data: (ArrayList<String>)pairs.getValue()){
-		        	writer.write("###" + data);
+		        ArrayList<Candidate> candis = (ArrayList<Candidate>)pairs.getValue();
+		        for(Candidate data: candis){
+		        	writer.write("###" + data.getName() + "###" + data.getText() + '\n');
 		        }
-		        writer.write("\r\n");
+//		        writer.write("\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }
 		    System.out.println("Success to file");
@@ -167,7 +168,7 @@ public class PrintDic{
 		}
 	}
 	
-	public static void loadTrainData(HashMap<String, String> words, HashMap<String, ArrayList<String>> trainData) {
+	public static void loadTrainData(HashMap<String, String> words, HashMap<String, ArrayList<Candidate>> trainData) {
 		// TODO Auto-generated method stub
 		String filename = "traindata";
 		BufferedReader br = null;
@@ -177,11 +178,15 @@ public class PrintDic{
 		    String line = br.readLine();
 	        while (line != null) {
 	        	String[] tmp = line.split("###");
-	        	ArrayList<String> al = new ArrayList<String>();
-	        	for(int i=1; i<tmp.length; i++) {
-	        		al.add(tmp[i]);
+	        	ArrayList<Candidate> al = new ArrayList<Candidate>();
+	        	Candidate candi = new Candidate(tmp[1], tmp[2]);
+	        	if(trainData.containsKey(tmp[0])){
+	        		trainData.get(tmp[0]).add(candi);
+	        	}else{
+	        		ArrayList<Candidate> paras = new ArrayList<Candidate>();
+	        		paras.add(candi);
+	        		trainData.put(tmp[0], paras);
 	        	}
-	        	trainData.put(tmp[0], al);
 	            line = br.readLine();
 	        }
 

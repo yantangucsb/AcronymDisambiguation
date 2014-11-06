@@ -7,14 +7,21 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 public class Candidate{
 	public String name;
 	ArrayList<String> feature;
+	public String text;
 	
 	public Candidate(String attr) {
 		this.name = attr;
 		feature = new ArrayList<String>();
+		text = "";
 	}
 	
 	public Candidate(){
 		feature = new ArrayList<String>();
+	}
+
+	public Candidate(String str1, String str2) {
+		name = str1;
+		text = str2;
 	}
 
 	public void getFeature() {
@@ -33,6 +40,32 @@ public class Candidate{
 	}
 	public String getName(){
 		return name;
+	}
+	
+	public void setText(String str) {
+		text += str;
+	}
+	
+	public String getText() {
+		return text;
+	}
+	
+	public boolean hasText() {
+		if(text.length() == 0)
+			return false;
+		return true;
+	}
+
+	public void tagText() {
+		text = setTagger(text);
+		
+	}
+	
+	private String setTagger(String text) {
+		 MaxentTagger tagger = new MaxentTagger("taggers/left3words-distsim-wsj-0-18.tagger");
+		 String tagged = tagger.tagString(text);
+		 return tagged;
+//		 System.out.println(tagged);
 	}
 	
 }

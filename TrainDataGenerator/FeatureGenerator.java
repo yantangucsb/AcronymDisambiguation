@@ -19,23 +19,37 @@ import DicGenerator.WordDic;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public class FeatureGenerator {
-	HashMap<String, WordDic> wordDic;
+	ArrayList<WordDic> wordDic;
 
-	public void parseSentence(HashMap<String, String> words, HashMap<String, ArrayList<String>> trainData) {
-		Iterator<Entry<String, ArrayList<String>>> it = trainData.entrySet().iterator();
+	public void findExpansions(HashMap<String, String> words, HashMap<String, ArrayList<Candidate>> trainData) {
+		Iterator<Entry<String, ArrayList<Candidate>>> it = trainData.entrySet().iterator();
 	    while (it.hasNext()) {
 	    	Map.Entry pairs = (Map.Entry)it.next();
-	    	WordDic wd = new WordDic((String) pairs.getKey());
-	    	getWordExpansion(words.get(pairs.getKey()), wd);
-	    	ArrayList<String> paras = (ArrayList<String>) pairs.getValue();
-	    	for(String para: paras){
-	    		setTagger(para);
+	    	String name = (String) pairs.getKey();
+	    	ArrayList<Candidate> candis = getWordExpansion(words.get(name)); //what if no expansions
+	    	if(candis != null){
+	    		WordDic newWord = new WordDic(name, candis);
+	    		
+	    		if(candis.size() > 1){
+	    			for(Candidate candi : candis){
+	    				candi.tagText();
+	    			}
+	    		}
+	    		ArrayList<Candidate> trainpara = (ArrayList<Candidate>) pairs.getValue();
+	    		for(Candidate candi : trainpara){
+	    			candi.tagText();
+	    		}
+	    		newWord.setTrainText(trainpara);
+	    		wordDic.add(newWord);
+	    	}else{
+	    		//resolve it by adding an expansion manually
+	    		//maybe remove the item
 	    	}
 	    }
 		
 	}
 	
-	private ArrayList<Candidate> getWordExpansion(String link, WordDic wd) {
+	private ArrayList<Candidate> getWordExpansion(String link) {
 		ArrayList<Candidate> candis = new ArrayList<Candidate>();
 		int index = 0;
 		if(link.charAt(0) == '/')
@@ -92,7 +106,7 @@ public class FeatureGenerator {
 		if(candis.size() != 1){
 			int size = candis.size();
 			for(int i=size - 1; i>=0; i--){
-				if(!isExistWiki(candis.get(i).name)){
+				if(!isExistWiki(candis.get(i))){
 					candis.remove(i);
 				}
 				if(candis.size() == 1)
@@ -102,20 +116,20 @@ public class FeatureGenerator {
 		}
 		return candis;
 	}
-
-	private void setTagger(String text) {
-		 MaxentTagger tagger = new MaxentTagger("taggers/left3words-distsim-wsj-0-18.tagger");
-		 String tagged = tagger.tagString(text);
-//		 System.out.println(tagged);
-	}
 	
-	private boolean isExistWiki(String text) {
-		text.replaceAll(" ", "_");
-		String link = "http://en.wikipedia.org" + "/wiki/" + text;
+	private boolean isExistWiki(Candidate candi) {
+		String name = candi.name.replaceAll(" ", "_");
+		String link = "http://en.wikipedia.org" + "/wiki/" + name;
 		try {
 			Document tmpdoc = Jsoup.connect(link).userAgent("Mozilla").get();
-			if(tmpdoc != null)
+			if(tmpdoc != null){
+				Elements ps = tmpdoc.select("p");
+				for(Element p: ps){
+					candi.setText(p.text());
+				}
 				return true;
+			}
+				
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
@@ -129,5 +143,11 @@ public class FeatureGenerator {
 		if(!asciiEncoder.canEncode(s))
 			return true;
 		return false;
+	}
+
+	public void genetrainDataFeature() {
+		for(WordDic wd: wordDic){
+			wd.getfeatures();
+		}
 	}
 }
