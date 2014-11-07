@@ -1,5 +1,8 @@
 package Features;
 
+import java.util.HashMap;
+
+import DicGenerator.Candidate;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public abstract class Feature {
@@ -12,12 +15,8 @@ public abstract class Feature {
 		name = str;
 	}
 	
-	private String setTagger(String text) {
-		 MaxentTagger tagger = new MaxentTagger("taggers/left3words-distsim-wsj-0-18.tagger");
-		 String tagged = tagger.tagString(text);
-		 return tagged;
-//		 System.out.println(tagged);
-	}
 	
-	public abstract void setFeature(String str1, String str2);
+	public abstract void setFeature(String str1, String str2, HashMap<String, Candidate> candis);
+
+	public abstract String getfeatureString() ;
 }

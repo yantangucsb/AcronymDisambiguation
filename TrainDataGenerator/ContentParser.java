@@ -58,9 +58,9 @@ public class ContentParser{
 //			wordsparser.printWords("wiki/acronymDic");
 //			wordsparser.printDic2Console();
 //			PrintDic.printXML2file(wordsparser.words, "wiki/acronymDic");
-//			PrintDic.printTrainData(wordsparser.trainData, "wiki/traindata");
-			fg.findExpansions(wordsparser.words, wordsparser.trainData);
-			fg.genetrainDataFeature();
+			PrintDic.printTrainData(wordsparser.trainData, "wiki/traindata");
+//			fg.findExpansions(wordsparser.words, wordsparser.trainData);
+//			fg.genetrainDataFeature();
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -10,14 +10,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import Features.Feature;
-import Features.SameNounPercen;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import Features.*;
 
 public class WordDic{
 	private String name;
 	private HashMap<String, Candidate> expansions;
 	private ArrayList<Candidate> trainText;
 	private ArrayList<Feature> features;
+	private ArrayList<String> trainDataWeka;
 	
 	public WordDic(String name){
 		this.name = name;
@@ -28,8 +29,8 @@ public class WordDic{
 	}
 	
 	private void addExistFeatures() {
-		features.add(new SameNounPercen());
-		features.add(new SameNounPercen());
+		features.add(new CommonTermsNum());
+		features.add(new TFIDFsim());
 	}
 
 	public WordDic(String text, ArrayList<Candidate> candis) {
@@ -105,9 +106,27 @@ public class WordDic{
 				Map.Entry<String, Candidate> pairs = it.next();
 				Candidate candi = pairs.getValue();
 				for(Feature f: features){
-					f.setFeature(trainPara.text, candi.text);
+					f.setFeature(trainPara.text, candi.text, expansions);
 				}
+				String isSame = (trainPara.name.equals(candi.name))? "Y":"N";
+				set2WekaData(isSame);
 			}
 		}
+	}
+	
+	private void set2WekaData(String isSame) {
+		String trainLine = "";
+		for(Feature f: features) {
+			trainLine +=f.getfeatureString() + ' ';
+		}
+		trainLine +=isSame;
+		trainDataWeka.add(trainLine);
+	}
+
+	private String setTagger(String text) {
+		 MaxentTagger tagger = new MaxentTagger("taggers/left3words-distsim-wsj-0-18.tagger");
+		 String tagged = tagger.tagString(text);
+		 return tagged;
+//		 System.out.println(tagged);
 	}
 }
