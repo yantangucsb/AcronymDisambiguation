@@ -19,15 +19,19 @@ import TextModel.TargetText;
 public class ExpansionGenerator {
 	HashMap<String, String> words;
 	HashMap<String, ArrayList<String>> expansions;
+	ArrayList<String> waitWords;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_B";
+		String filename = "wiki/candis_C";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
+		waitWords = new ArrayList<String>();
+		
 		PrintDic.loadWords(words);
 //		PrintDic.loadExpansions(expansions, filename);
 		GetExpansions();
 		PrintDic.printExpansions(expansions, filename);
+		PrintDic.printList(waitWords);
 	}
 
 	private void GetExpansions() {
@@ -42,7 +46,7 @@ public class ExpansionGenerator {
 					continue;
 				}
 			}
-			if(name.charAt(0) != 'B' && name.charAt(0) != 'b' )
+			if(name.charAt(0) != 'C' && name.charAt(0) != 'c' )
 				continue;
 			ArrayList<String> candis = getWordExpansion(words.get(name));
 			if(candis != null && candis.size() > 0){
@@ -110,7 +114,9 @@ public class ExpansionGenerator {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.out.println("current link: " + link);
+			waitWords.add(link);
 		}
 		if(candis.size() != 1){
 			int size = candis.size();

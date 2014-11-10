@@ -251,10 +251,10 @@ public class PrintDic{
 		    String line = br.readLine();
 	        while (line != null) {
 	        	String[] tmp = line.split("###");
-	        	System.out.println("Ac:" + tmp[0]);
+/*	        	System.out.println("Ac:" + tmp[0]);
 	        	for(int i=1; i<tmp.length; i++){
 	        		System.out.println(tmp[i]);
-	        	}
+	        	}*/
 	        	ArrayList<String> al = new ArrayList<String>();
 	        	for(int i=1; i<tmp.length; i++){
 	        		if(!al.contains(tmp[i]))
@@ -286,6 +286,19 @@ public class PrintDic{
 	    	writer.close();
 		}catch(Exception e){
 			System.out.println("Open and write expansion file candis_A failed.");
+		}
+		
+	}
+
+	public static void printList(ArrayList<String> waitWords) {
+		BufferedWriter writer = null;
+		try{
+			writer = new BufferedWriter(new FileWriter("wiki/waitWords"));
+			for(String ww : waitWords) {
+				writer.write(ww + "\r\n");
+			}
+		}catch(Exception e){
+			System.out.println("Open and write waitWords file candis_A failed.");
 		}
 		
 	}
