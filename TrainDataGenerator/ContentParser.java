@@ -26,17 +26,17 @@ public class ContentParser{
 	
 	public ContentParser(){
 		wordsparser = new WordsParser();
-		fg = new FeatureGenerator();
 		
 		links = new LinkedList<linkPage>();
 		String firstLink ="/wiki/Wikipedia";
 		String title = "Wikipedia";
 		links.add(new linkPage(firstLink, title));
+		fg = new FeatureGenerator();
 		
 		doc = null;
 		linkCount = 0;
 	}
-	public void getContentDoc(){
+	public void geneTrainData(){
 		try {
 //			Elements el = ;
 //			doc.appendChild(el);
@@ -58,15 +58,18 @@ public class ContentParser{
 //			wordsparser.printWords("wiki/acronymDic");
 //			wordsparser.printDic2Console();
 //			PrintDic.printXML2file(wordsparser.words, "wiki/acronymDic");
-			PrintDic.printTrainData(wordsparser.trainData, "wiki/traindata");
-//			fg.findExpansions(wordsparser.words, wordsparser.trainData);
-//			fg.genetrainDataFeature();
+//			wordsparser.printTrainData("wiki/traindata");
+			
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void testTFIDF(){
+		fg.getBestCandi(wordsparser.words, wordsparser.trainData);
 	}
 	public void getTextContent(Document tmpdoc, linkPage curpage){
 		try {

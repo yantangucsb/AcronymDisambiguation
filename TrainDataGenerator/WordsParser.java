@@ -20,8 +20,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 
+import TextModel.Candidate;
 import DicGenerator.AcronymGenerator;
-import DicGenerator.Candidate;
 import DicGenerator.PrintDic;
 import DicGenerator.WordDic;
 import DicGenerator.linkPage;
@@ -32,13 +32,12 @@ public class WordsParser{
 	HashMap<String, String> words;
 	public HashMap<String, ArrayList<Candidate>> trainData;
 	ArrayList<String> stopWord;
-	int count;
+	
 	WordsParser(){
-		count=0;
 		words = new HashMap<String, String>();
 		trainData = new HashMap<String, ArrayList<Candidate>>();
 		PrintDic.loadWords(words);
-		PrintDic.loadTrainData(words, trainData);
+		PrintDic.loadTrainData(trainData);
 /*		stopWord = new ArrayList<String>();
 		stopWord.add("TV"); //convert to read from file
 		stopWord.add("II");
@@ -52,6 +51,7 @@ public class WordsParser{
 			return;
 		Candidate trainpara = new Candidate(title, string);
 		add2TrainData(text, trainpara);
+		System.out.println("find a papra:" + text +"    "+ string);
 	}
 	
 /*	void addAcronym(String tmpword) {
@@ -101,5 +101,9 @@ public class WordsParser{
 			paras.add(candi);
 			trainData.put(text, paras);
 		}
+	}
+
+	public void printTrainData() {
+		PrintDic.printTrainData(trainData);		
 	}
 }

@@ -12,41 +12,31 @@ import org.jsoup.nodes.Element;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import Features.*;
+import TextModel.Candidate;
 
 public class WordDic{
 	private String name;
 	private HashMap<String, Candidate> expansions;
-	private ArrayList<Candidate> trainText;
-	private ArrayList<Feature> features;
-	private ArrayList<String> trainDataWeka;
 	
 	public WordDic(String name){
 		this.name = name;
 		expansions = new HashMap<String, Candidate>();
-		trainText = new ArrayList<Candidate>();
-		features = new ArrayList<Feature>();
-		addExistFeatures();
 	}
 	
-	private void addExistFeatures() {
-		features.add(new CommonTermsNum());
-		features.add(new TFIDFsim());
-	}
-
 	public WordDic(String text, ArrayList<Candidate> candis) {
 		name = text;
 		System.out.println(name);
 		expansions = new HashMap<String, Candidate>();
 		for(int i=0; i<candis.size(); i++){
-			if(expansions.containsKey(candis.get(i).name))
+			if(expansions.containsKey(candis.get(i).getName()))
 				continue;
-			expansions.put(candis.get(i).name, candis.get(i));
-			System.out.println(candis.get(i).name);
+			expansions.put(candis.get(i).getName(), candis.get(i));
+			System.out.println(candis.get(i).getName());
 		}
 //		System.out.println("Successfully");
 	}
 
-	public boolean getCandidates(Document tmpdoc) {
+/*	public boolean getCandidates(Document tmpdoc) {
 		try {
 			Elements ps = tmpdoc.select("p");
 			boolean hascandidate = false;
@@ -81,46 +71,17 @@ public class WordDic{
 			e.printStackTrace();
 		}
 		return true;		
-	}
+	}*/
 
 	public void add2Expansions(Candidate temp) {
-		if(expansions.containsKey(temp.name))
+		if(expansions.containsKey(temp.getName()))
 			return;
 		temp.getFeature();
-		expansions.put(temp.name, temp);		
-	}
-
-	public void setTrainText(ArrayList<Candidate> trainpara) {
-		trainText = trainpara;
-		
+		expansions.put(temp.getName(), temp);		
 	}
 
 	public HashMap<String, Candidate> getExpansions() {
 		return expansions;
-	}
-
-	public void getfeatures() {
-		for(Candidate trainPara : trainText) {
-			Iterator<Entry<String, Candidate>> it = expansions.entrySet().iterator();
-			while(it.hasNext()){
-				Map.Entry<String, Candidate> pairs = it.next();
-				Candidate candi = pairs.getValue();
-				for(Feature f: features){
-					f.setFeature(trainPara.text, candi.text, expansions);
-				}
-				String isSame = (trainPara.name.equals(candi.name))? "Y":"N";
-				set2WekaData(isSame);
-			}
-		}
-	}
-	
-	private void set2WekaData(String isSame) {
-		String trainLine = "";
-		for(Feature f: features) {
-			trainLine +=f.getfeatureString() + ' ';
-		}
-		trainLine +=isSame;
-		trainDataWeka.add(trainLine);
 	}
 
 	private String setTagger(String text) {
@@ -128,5 +89,22 @@ public class WordDic{
 		 String tagged = tagger.tagString(text);
 		 return tagged;
 //		 System.out.println(tagged);
+	}
+
+	public Candidate getBestCandi() {
+		double max = 0.0;
+		Candidate bestCandi = null;
+		Iterator<Entry<String, Candidate>> it = expansions.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Candidate candi = (Candidate) pairs.getValue();
+			ArrayList<String> features = candi.getFeature();
+			double value = Double.parseDouble(features.get(0));
+			if(value > max){
+				max = value;
+				bestCandi = candi;
+			}
+		}
+		return bestCandi;
 	}
 }
