@@ -111,6 +111,15 @@ public class PrintDic{
 	        String line = br.readLine();
 	        while (line != null) {
 	        	String[] tmp = line.split("###");
+	        	int i = 0;
+	        	for(; i<tmp[i].length(); i++){
+	        		if(tmp[1].charAt(i) == '#'){
+	        			tmp[0] += '#';
+	        			continue;
+	        		}
+	        		break;
+	        	}
+	        	tmp[1].substring(i);
 	        	acronyms.put(tmp[0], tmp[1]);
 	            line = br.readLine();
 	        }
@@ -133,7 +142,7 @@ public class PrintDic{
 		        writer.write((String)pairs.getKey());
 		        ArrayList<Candidate> candis = (ArrayList<Candidate>)pairs.getValue();
 		        for(Candidate data: candis){
-		        	writer.write("###" + data.getName() + "###" + data.getText() + '\n');
+		        	writer.write(" ### " + data.getName() + " ### " + data.getText() + '\n');
 		        }
 //		        writer.write("\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
@@ -250,7 +259,7 @@ public class PrintDic{
 			br = new BufferedReader( new FileReader(filename));
 		    String line = br.readLine();
 	        while (line != null) {
-	        	String[] tmp = line.split("###");
+	        	String[] tmp = line.split(" ### ");
 /*	        	System.out.println("Ac:" + tmp[0]);
 	        	for(int i=1; i<tmp.length; i++){
 	        		System.out.println(tmp[i]);
@@ -280,7 +289,7 @@ public class PrintDic{
 		        writer.write((String)pairs.getKey());
 		        ArrayList<String> candis = (ArrayList<String>) pairs.getValue();
 		        for(String candi: candis)
-		        	writer.write("###" + candi);
+		        	writer.write(" ### " + candi);
 		        writer.write("\r\n");
 		    }
 	    	writer.close();
@@ -293,10 +302,11 @@ public class PrintDic{
 	public static void printList(ArrayList<String> waitWords) {
 		BufferedWriter writer = null;
 		try{
-			writer = new BufferedWriter(new FileWriter("wiki/waitWords"));
+			writer = new BufferedWriter(new FileWriter("wiki/waitWords_J"));
 			for(String ww : waitWords) {
 				writer.write(ww + "\r\n");
 			}
+			writer.close();
 		}catch(Exception e){
 			System.out.println("Open and write waitWords file candis_A failed.");
 		}

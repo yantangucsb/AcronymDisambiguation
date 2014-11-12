@@ -22,13 +22,13 @@ public class ExpansionGenerator {
 	ArrayList<String> waitWords;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_C";
+		String filename = "wiki/candis_J";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
 		
 		PrintDic.loadWords(words);
-//		PrintDic.loadExpansions(expansions, filename);
+		PrintDic.loadExpansions(expansions, filename);
 		GetExpansions();
 		PrintDic.printExpansions(expansions, filename);
 		PrintDic.printList(waitWords);
@@ -46,7 +46,7 @@ public class ExpansionGenerator {
 					continue;
 				}
 			}
-			if(name.charAt(0) != 'C' && name.charAt(0) != 'c' )
+			if(name.charAt(0) != 'J' && name.charAt(0) != 'j' )
 				continue;
 			ArrayList<String> candis = getWordExpansion(words.get(name));
 			if(candis != null && candis.size() > 0){
