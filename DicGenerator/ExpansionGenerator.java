@@ -20,9 +20,10 @@ public class ExpansionGenerator {
 	HashMap<String, String> words;
 	HashMap<String, ArrayList<String>> expansions;
 	ArrayList<String> waitWords;
+	boolean linkfailed;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_C";
+		String filename = "wiki/candis_P";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
@@ -31,6 +32,7 @@ public class ExpansionGenerator {
 		PrintDic.loadExpansions(expansions, filename);
 		GetExpansions();
 //		GetExpansionsDF();
+		PrintDic.print2OriFile(words, "acronyms1");
 		PrintDic.printExpansions(expansions, filename);
 		PrintDic.printList(waitWords);
 	}
@@ -40,7 +42,7 @@ public class ExpansionGenerator {
 		while(it.hasNext()) {
 			Map.Entry pairs = (Map.Entry)it.next();
 			String name = (String) pairs.getKey();
-			if(name.charAt(0) != 'C' && name.charAt(0) != 'c' )
+			if(name.charAt(0) != 'P' && name.charAt(0) != 'p' )
 				continue;
 			ArrayList<String> candis = new ArrayList<String>();
 			if(expansions.containsKey(name))
@@ -70,15 +72,20 @@ public class ExpansionGenerator {
 					continue;
 				}
 			}
-			if(name.charAt(0) != 'C' && name.charAt(0) != 'c' )
+			if(name.charAt(0) != 'P' && name.charAt(0) != 'p' )
 				continue;
+			linkfailed = false;
 			ArrayList<String> candis = getWordExpansion(words.get(name));
-			if(candis != null && candis.size() > 0){
+			if(!linkfailed)
+				getWordExpansionDF(name, candis);
+			if(!linkfailed && candis != null && candis.size()>0) {
 				expansions.put(name, candis);
 				System.out.println(name);
 				for(String candi : candis)
 					System.out.println("ex: " + candi);
 			}
+			if(!linkfailed && (candis == null || candis.size() ==0))
+				it.remove();
 		}
 	}
 
@@ -115,6 +122,8 @@ public class ExpansionGenerator {
 //						if(isExistWiki(curp.text())){
 						if(hasNonAscii(curp.text()))
 							break;
+						if(!isExistWiki(curp.text()))
+							break;
 //						cur.setName(curp.text());
 						cur = curp.text();
 //							System.out.println("Get an expansion:" + curp.text());
@@ -140,25 +149,15 @@ public class ExpansionGenerator {
 //			e.printStackTrace();
 			System.out.println("current link: " + link);
 			waitWords.add(link);
+			linkfailed = true;
 		}
-		if(candis.size() != 1){
-			int size = candis.size();
-			for(int i=size - 1; i>=0; i--){
-				if(!isExistWiki(candis.get(i))){
-					candis.remove(i);
-				}
-				if(candis.size() == 1)
-					break;
-			}
-			
-		}
+		
 		return candis;
 	}
 	
 	private void getWordExpansionDF(String link, ArrayList<String> candis) {
-		if(candis.size() == 1){
-			if(!isExistWiki(candis.get(0)))
-				candis.clear();
+		if(candis == null){
+			candis = new ArrayList<String> ();
 		}
 		link = transformFormat(link);
 		String curlink = "http://acronyms.thefreedictionary.com/"+link;
@@ -180,24 +179,27 @@ public class ExpansionGenerator {
 			Elements rows = curTable.select("tr");
 			for(int i=0; i<rows.size(); i++){
 				Element row = rows.get(i);
-				Elements cols = rows.select("td");
+				Elements cols = row.select("td");
 				boolean isEx = false;
-				for(Element col: cols){
-					if(col.attr("class").equals("acr")){
+				for(int j=0; j<cols.size(); j++){
+					Element col = cols.get(j);
+					if(j == 0 && col.attr("class").equals("acr")){
 						isEx = true;
 					}
-					if(isEx){
+					if(isEx && j>0){
 						String exText = col.text();
 						if(hasNonAscii(exText))
 							break;
 						if(!isExistWiki(exText))
 							break;
-						candis.add(exText);
+						if(!candis.contains(exText))
+							candis.add(exText);
 					}
 				}
 			}
 		}catch(Exception e){
 			System.out.println("not exist on fd: " + link);
+			linkfailed = true;
 		}
 		return;
 	}

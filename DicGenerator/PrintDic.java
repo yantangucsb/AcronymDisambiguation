@@ -80,7 +80,7 @@ public class PrintDic{
 		    Iterator<Entry<String, WordDic>> it = words.entrySet().iterator();
 		    while (it.hasNext()) {
 		        Map.Entry pairs = (Map.Entry)it.next();
-		        writer.write((String)pairs.getKey()+"###"+(String)pairs.getValue()+"\r\n");
+		        writer.write((String)pairs.getKey()+" ### "+(String)pairs.getValue()+"\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }
 		    writer.close();
@@ -302,7 +302,7 @@ public class PrintDic{
 	public static void printList(ArrayList<String> waitWords) {
 		BufferedWriter writer = null;
 		try{
-			writer = new BufferedWriter(new FileWriter("wiki/waitWords_C"));
+			writer = new BufferedWriter(new FileWriter("wiki/waitWords_P"));
 			for(String ww : waitWords) {
 				writer.write(ww + "\r\n");
 			}
