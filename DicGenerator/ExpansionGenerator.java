@@ -22,7 +22,7 @@ public class ExpansionGenerator {
 	ArrayList<String> waitWords;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_J";
+		String filename = "wiki/candis_C";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
@@ -30,9 +30,33 @@ public class ExpansionGenerator {
 		PrintDic.loadWords(words);
 		PrintDic.loadExpansions(expansions, filename);
 		GetExpansions();
+//		GetExpansionsDF();
 		PrintDic.printExpansions(expansions, filename);
 		PrintDic.printList(waitWords);
 	}
+
+	private void GetExpansionsDF() {
+		Iterator<Entry<String, String>> it = words.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry pairs = (Map.Entry)it.next();
+			String name = (String) pairs.getKey();
+			if(name.charAt(0) != 'C' && name.charAt(0) != 'c' )
+				continue;
+			ArrayList<String> candis = new ArrayList<String>();
+			if(expansions.containsKey(name))
+				candis = expansions.get(name);
+			getWordExpansionDF(name, candis);
+			if(candis.size() > 0)
+				expansions.put(name, candis);
+			else{
+				if(expansions.containsKey(name))
+					expansions.remove(name);
+				it.remove();
+			}
+		}
+		
+	}
+
 
 	private void GetExpansions() {
 		Iterator<Entry<String, String>> it = words.entrySet().iterator();
@@ -46,7 +70,7 @@ public class ExpansionGenerator {
 					continue;
 				}
 			}
-			if(name.charAt(0) != 'J' && name.charAt(0) != 'j' )
+			if(name.charAt(0) != 'C' && name.charAt(0) != 'c' )
 				continue;
 			ArrayList<String> candis = getWordExpansion(words.get(name));
 			if(candis != null && candis.size() > 0){
@@ -60,7 +84,6 @@ public class ExpansionGenerator {
 
 	private ArrayList<String> getWordExpansion(String link) {
 		ArrayList<String> candis = new ArrayList<String>();
-		int index = 0;
 		if(link.charAt(0) == '/')
 			link = link.substring(1, link.length());
 		String curlink = AcronymGenerator.acronymSourceLink+ link + "&p=99999";
@@ -132,6 +155,80 @@ public class ExpansionGenerator {
 		return candis;
 	}
 	
+	private void getWordExpansionDF(String link, ArrayList<String> candis) {
+		if(candis.size() == 1){
+			if(!isExistWiki(candis.get(0)))
+				candis.clear();
+		}
+		link = transformFormat(link);
+		String curlink = "http://acronyms.thefreedictionary.com/"+link;
+		try {
+			Document expansionHtml = Jsoup.connect(curlink).userAgent("Mozilla").get();
+			Elements tables = expansionHtml.select("table");
+			if(tables.size() == 0)
+				return;
+			boolean hasEx = false;
+			Element curTable = null;
+			for(Element table: tables){
+				if(table.attr("id").equals("AcrFinder")){
+					curTable = table;
+					break;
+				}
+			}
+			if(curTable == null)
+				return;
+			Elements rows = curTable.select("tr");
+			for(int i=0; i<rows.size(); i++){
+				Element row = rows.get(i);
+				Elements cols = rows.select("td");
+				boolean isEx = false;
+				for(Element col: cols){
+					if(col.attr("class").equals("acr")){
+						isEx = true;
+					}
+					if(isEx){
+						String exText = col.text();
+						if(hasNonAscii(exText))
+							break;
+						if(!isExistWiki(exText))
+							break;
+						candis.add(exText);
+					}
+				}
+			}
+		}catch(Exception e){
+			System.out.println("not exist on fd: " + link);
+		}
+		return;
+	}
+	
+	private String transformFormat(String link) {
+		link.replace(' ', '+');
+		link.replace("#", "%23");
+		link.replace("$", "%24");
+		link.replace("%", "%25");
+		link.replace("&", "%26");
+		link.replace("'", "%27");
+		link.replace("+", "%2b");
+		link.replace(",", "%2c");
+		link.replace("/", "%2f");
+		link.replace(":", "%3a");
+		link.replace(";", "%3b");
+		link.replace("=", "%3d");
+		link.replace("?", "%3f");
+		link.replace("@", "%40");
+		link.replace("[", "%5b");
+		link.replace("\\", "%5c");
+		link.replace("]", "%5d");
+		link.replace("^", "%5e");
+		link.replace("`", "%60");
+		link.replace("{", "%7b");
+		link.replace("|", "%7c");
+		link.replace("}", "%7d");
+		
+		return link;
+	}
+
 	private boolean isExistWiki(String candi) {
 		String name = candi.replaceAll(" ", "_");
 		String link = "http://en.wikipedia.org" + "/wiki/" + name;
