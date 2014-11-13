@@ -61,7 +61,7 @@ public class ExpansionGenerator {
 			else{
 				if(linkfailed)
 					waitWords.add(name);
-				if(candis.size() == 0 && expansions.containsKey(name)){
+				if((candis == null || candis.size() == 0) && expansions.containsKey(name)){
 					expansions.remove(name);
 					it.remove();
 					System.out.println("rm the acr: " + name);
@@ -160,13 +160,13 @@ public class ExpansionGenerator {
 			}
 			
 		} catch (SocketTimeoutException ste) {
-			ste.printStackTrace();
+//			ste.printStackTrace();
 			System.out.println("connect abbreviation over time.");
 			System.out.println("current link: " + link);
 			linkfailed = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
 			
 		}
 		
@@ -216,14 +216,14 @@ public class ExpansionGenerator {
 				}
 			}
 		} catch (SocketTimeoutException ste) {
-			ste.printStackTrace();
+//			ste.printStackTrace();
 			System.out.println("connect abbreviation over time.");
 			System.out.println("current link: " + link);
 			waitWords.add(link);
 			linkfailed = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
 			System.out.println("not exist on fd: " + link);
 			
 		}
