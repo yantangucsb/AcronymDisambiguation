@@ -1,6 +1,7 @@
 package DicGenerator;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class ExpansionGenerator {
 	boolean linkfailed;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_R";
+		String filename = "wiki/candis_P";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
@@ -38,6 +39,7 @@ public class ExpansionGenerator {
 		PrintDic.printList(waitWords);
 	}
 
+	//for candis already processed with abbrevations.com
 	private void GetExpansionsDF() {
 		Iterator<Entry<String, String>> it = words.entrySet().iterator();
 		while(it.hasNext()) {
@@ -46,15 +48,23 @@ public class ExpansionGenerator {
 			if(name.charAt(0) != 'R' && name.charAt(0) != 'r' )
 				continue;
 			ArrayList<String> candis = new ArrayList<String>();
-			if(expansions.containsKey(name))
+			if(expansions.containsKey(name)){
 				candis = expansions.get(name);
+				if(candis.size() != 0 && !isExistWiki(candis.get(0)))
+					candis.remove(0);
+				
+			}
+			linkfailed = false;
 			getWordExpansionDF(name, candis);
-			if(candis.size() > 0)
+			if(!linkfailed && candis.size() > 0)
 				expansions.put(name, candis);
 			else{
-				if(expansions.containsKey(name))
+				if(linkfailed)
+					waitWords.add(name);
+				if(candis.size() == 0 && expansions.containsKey(name)){
 					expansions.remove(name);
-				it.remove();
+					it.remove();
+				}
 			}
 		}
 		
@@ -73,7 +83,7 @@ public class ExpansionGenerator {
 					continue;
 				}
 			}
-			if(name.charAt(0) != 'R' && name.charAt(0) != 'r' )
+			if(name.charAt(0) != 'P' && name.charAt(0) != 'p' )
 				continue;
 			linkfailed = false;
 			ArrayList<String> candis = getWordExpansion(words.get(name));
@@ -84,6 +94,9 @@ public class ExpansionGenerator {
 				System.out.println(name);
 				for(String candi : candis)
 					System.out.println("ex: " + candi);
+			}
+			if(linkfailed){
+				waitWords.add(name);
 			}
 			if(!linkfailed && (candis == null || candis.size() ==0))
 				it.remove();
@@ -97,7 +110,7 @@ public class ExpansionGenerator {
 		String curlink = AcronymGenerator.acronymSourceLink+ link + "&p=99999";
 //		URL url;
 		try {
-			Document expansionHtml = Jsoup.connect(curlink).userAgent("Mozilla").get();
+			Document expansionHtml = Jsoup.connect(curlink).timeout(10000).userAgent("Mozilla").get();
 			Elements tables = expansionHtml.select("table");
 //			System.out.println(tables.size());
 			if(tables.size() == 0)
@@ -145,12 +158,15 @@ public class ExpansionGenerator {
 				
 			}
 			
+		} catch (SocketTimeoutException ste) {
+			ste.printStackTrace();
+			System.out.println("connect abbreviation over time.");
+			System.out.println("current link: " + link);
+			linkfailed = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-//			e.printStackTrace();
-			System.out.println("current link: " + link);
-			waitWords.add(link);
-			linkfailed = true;
+			e.printStackTrace();
+			
 		}
 		
 		return candis;
@@ -163,7 +179,7 @@ public class ExpansionGenerator {
 		link = transformFormat(link);
 		String curlink = "http://acronyms.thefreedictionary.com/"+link;
 		try {
-			Document expansionHtml = Jsoup.connect(curlink).userAgent("Mozilla").get();
+			Document expansionHtml = Jsoup.connect(curlink).timeout(10000).userAgent("Mozilla").get();
 			Elements tables = expansionHtml.select("table");
 			if(tables.size() == 0)
 				return;
@@ -198,9 +214,17 @@ public class ExpansionGenerator {
 					}
 				}
 			}
-		}catch(Exception e){
-			System.out.println("not exist on fd: " + link);
+		} catch (SocketTimeoutException ste) {
+			ste.printStackTrace();
+			System.out.println("connect abbreviation over time.");
+			System.out.println("current link: " + link);
+			waitWords.add(link);
 			linkfailed = true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("not exist on fd: " + link);
+			
 		}
 		return;
 	}
@@ -236,7 +260,7 @@ public class ExpansionGenerator {
 		String name = candi.replaceAll(" ", "_");
 		String link = "http://en.wikipedia.org" + "/wiki/" + name;
 		try {
-			Document tmpdoc = Jsoup.connect(link).userAgent("Mozilla").get();
+			Document tmpdoc = Jsoup.connect(link).timeout(10000).userAgent("Mozilla").get();
 			if(tmpdoc != null){
 /*				Elements ps = tmpdoc.select("p");
 				for(Element p: ps){

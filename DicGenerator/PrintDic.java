@@ -302,7 +302,7 @@ public class PrintDic{
 	public static void printList(ArrayList<String> waitWords) {
 		BufferedWriter writer = null;
 		try{
-			writer = new BufferedWriter(new FileWriter("wiki/waitWords_R"));
+			writer = new BufferedWriter(new FileWriter("wiki/waitWords_P"));
 			for(String ww : waitWords) {
 				writer.write(ww + "\r\n");
 			}
