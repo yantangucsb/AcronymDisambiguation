@@ -312,4 +312,38 @@ public class PrintDic{
 		}
 		
 	}
+
+	public static void printSubAcr(HashMap<String, String> words, String filename) {
+		BufferedWriter writer = null;
+		try
+		{
+		    writer = new BufferedWriter( new FileWriter(filename));
+		    Iterator<Entry<String, String>> it = words.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry pairs = (Map.Entry)it.next();
+		        String name = (String) pairs.getKey();
+		        if(name.charAt(0) == 'B' || name.charAt(0) == 'b')
+		        	writer.write((String)pairs.getKey()+" ### "+(String)pairs.getValue()+"\r\n");
+		        it.remove(); // avoids a ConcurrentModificationException
+		    }
+		    writer.close();
+		    System.out.println("Success to file");
+
+		}
+		catch ( Exception e)
+		{
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
+		
+	}
 }

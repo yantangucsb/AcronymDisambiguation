@@ -34,7 +34,7 @@ public class ExpansionGenerator {
 		PrintDic.loadExpansions(expansions, filename);
 		GetExpansions();
 //		GetExpansionsDF();
-		PrintDic.print2OriFile(words, "acronyms1");
+		PrintDic.printSubAcr(words, "acronyms_A");
 		PrintDic.printExpansions(expansions, filename);
 		PrintDic.printList(waitWords);
 	}
@@ -64,6 +64,7 @@ public class ExpansionGenerator {
 				if(candis.size() == 0 && expansions.containsKey(name)){
 					expansions.remove(name);
 					it.remove();
+					System.out.println("rm the acr: " + name);
 				}
 			}
 		}
