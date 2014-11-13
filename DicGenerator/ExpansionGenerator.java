@@ -56,7 +56,7 @@ public class ExpansionGenerator {
 			}
 			linkfailed = false;
 			getWordExpansionDF(name, candis);
-			if(!linkfailed && candis.size() > 0)
+			if(!linkfailed && candis != null && candis.size() > 0)
 				expansions.put(name, candis);
 			else{
 				if(linkfailed)
