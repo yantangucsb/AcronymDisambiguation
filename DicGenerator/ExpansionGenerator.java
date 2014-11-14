@@ -31,10 +31,10 @@ public class ExpansionGenerator {
 		waitWords = new ArrayList<String>();
 		
 		PrintDic.loadWords(words, "wiki/acronyms");
-		PrintDic.loadExpansions(expansions, filename);
-//		GetExpansions();
-		GetExpansionsDF();
-		PrintDic.printSubAcr(words, "wiki/acronyms_A");
+//		PrintDic.loadExpansions(expansions, filename);
+		GetExpansions();
+//		GetExpansionsDF();
+		PrintDic.printSubAcr(words, "wiki/acronymsFull_A");
 		PrintDic.printExpansions(expansions, filename);
 		PrintDic.printList(waitWords, "wiki/waitWords_A");
 	}
@@ -147,8 +147,8 @@ public class ExpansionGenerator {
 //						if(isExistWiki(curp.text())){
 						if(hasNonAscii(curp.text()))
 							break;
-						if(!isExistWiki(curp.text()))
-							break;
+//						if(!isExistWiki(curp.text()))
+//							break;
 //						cur.setName(curp.text());
 						cur = curp.text();
 //							System.out.println("Get an expansion:" + curp.text());
@@ -229,8 +229,8 @@ public class ExpansionGenerator {
 						}
 						if(hasNonAscii(exText))
 							break;
-						if(!isExistWiki(exText))
-							break;
+//						if(!isExistWiki(exText))
+//							break;
 						if(!isExistedEx(exText, candis))
 							candis.add(exText);
 					}
