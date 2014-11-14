@@ -25,7 +25,7 @@ public class ExpansionGenerator {
 	boolean linkfailed;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_P";
+		String filename = "wiki/candis_T";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
@@ -34,7 +34,7 @@ public class ExpansionGenerator {
 		PrintDic.loadExpansions(expansions, filename);
 		GetExpansions();
 //		GetExpansionsDF();
-		PrintDic.printSubAcr(words, "acronyms_A");
+		PrintDic.printSubAcr(words, "wiki/acronyms_T");
 		PrintDic.printExpansions(expansions, filename);
 		PrintDic.printList(waitWords);
 	}
@@ -45,7 +45,7 @@ public class ExpansionGenerator {
 		while(it.hasNext()) {
 			Map.Entry pairs = (Map.Entry)it.next();
 			String name = (String) pairs.getKey();
-			if(name.charAt(0) != 'R' && name.charAt(0) != 'r' )
+			if(name.charAt(0) != 'T' && name.charAt(0) != 't' )
 				continue;
 			ArrayList<String> candis = new ArrayList<String>();
 			if(expansions.containsKey(name)){
@@ -84,7 +84,7 @@ public class ExpansionGenerator {
 					continue;
 				}
 			}
-			if(name.charAt(0) != 'P' && name.charAt(0) != 'p' )
+			if(name.charAt(0) != 'T' && name.charAt(0) != 't' )
 				continue;
 			linkfailed = false;
 			ArrayList<String> candis = getWordExpansion(words.get(name));
