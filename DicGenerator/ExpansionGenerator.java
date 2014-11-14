@@ -25,18 +25,18 @@ public class ExpansionGenerator {
 	boolean linkfailed;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_S";
+		String filename = "wiki/candis_A";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
 		
 		PrintDic.loadWords(words, "wiki/acronyms");
 		PrintDic.loadExpansions(expansions, filename);
-		GetExpansions();
-//		GetExpansionsDF();
-		PrintDic.printSubAcr(words, "wiki/acronyms_S");
+//		GetExpansions();
+		GetExpansionsDF();
+		PrintDic.printSubAcr(words, "wiki/acronyms_A");
 		PrintDic.printExpansions(expansions, filename);
-		PrintDic.printList(waitWords, "wiki/waitWords_S");
+		PrintDic.printList(waitWords, "wiki/waitWords_A");
 	}
 
 	//for candis already processed with abbrevations.com
@@ -45,33 +45,41 @@ public class ExpansionGenerator {
 		while(it.hasNext()) {
 			Map.Entry pairs = (Map.Entry)it.next();
 			String name = (String) pairs.getKey();
-			if(name.charAt(0) != 'S' && name.charAt(0) != 's' )
+			if(name.charAt(0) != 'A' && name.charAt(0) != 'a' )
 				continue;
 			ArrayList<String> candis = new ArrayList<String>();
+			linkfailed = false;
 			if(expansions.containsKey(name)){
 				candis = expansions.get(name);
 				if(candis.size() != 0 && !isExistWiki(candis.get(0)))
 					candis.remove(0);
 				
+			}else{
+				candis = getWordExpansion(words.get(name));
 			}
-			linkfailed = false;
-			getWordExpansionDF(name, candis);
-			if(!linkfailed && candis != null && candis.size() > 0)
+			
+			if(!linkfailed)
+				getWordExpansionDF(name, candis);
+			if(!linkfailed && candis != null && candis.size() > 0){
 				expansions.put(name, candis);
-			else{
-				if(linkfailed)
-					waitWords.add(name);
-				if((candis == null || candis.size() == 0) && expansions.containsKey(name)){
+				System.out.println(name);
+				for(String candi : candis)
+					System.out.println("ex: " + candi);
+			}
+			if(linkfailed)
+				waitWords.add(name);
+			if(!linkfailed && (candis == null || candis.size() == 0)) {
+				if(expansions.containsKey(name))
 					expansions.remove(name);
-					it.remove();
-					System.out.println("rm the acr: " + name);
-				}
+				it.remove();
+				System.out.println("rm the acr: " + name);
 			}
 		}
 		
 	}
 
 
+	//already processed in abbre and fd
 	private void GetExpansions() {
 		Iterator<Entry<String, String>> it = words.entrySet().iterator();
 		while(it.hasNext()) {
@@ -84,7 +92,7 @@ public class ExpansionGenerator {
 					continue;
 				}
 			}
-			if(name.charAt(0) != 'S' && name.charAt(0) != 's' )
+			if(name.charAt(0) != 'A' && name.charAt(0) != 'a' )
 				continue;
 			linkfailed = false;
 			ArrayList<String> candis = getWordExpansion(words.get(name));
@@ -155,7 +163,7 @@ public class ExpansionGenerator {
 					}*/
 				}
 				if(hasExpansion){
-					if(!candis.contains(cur))
+					if(!isExistedEx(cur, candis))
 						candis.add(cur);
 				}
 				
@@ -208,11 +216,22 @@ public class ExpansionGenerator {
 					}
 					if(isEx && j>0){
 						String exText = col.text();
+						Elements spans = cols.select("span");
+						if(spans != null){
+							for(Element ele: spans){
+								exText = exText.replace(ele.text(), "");
+							}
+						}
+						while(exText.charAt(exText.length() - 1) == ' '){
+							int len = exText.length();
+							exText = exText.substring(0, len-1);
+//							System.out.println(exText);
+						}
 						if(hasNonAscii(exText))
 							break;
 						if(!isExistWiki(exText))
 							break;
-						if(!candis.contains(exText))
+						if(!isExistedEx(exText, candis))
 							candis.add(exText);
 					}
 				}
@@ -232,6 +251,17 @@ public class ExpansionGenerator {
 		return;
 	}
 	
+	private boolean isExistedEx(String exText, ArrayList<String> candis) {
+		
+		String ex = exText.toLowerCase();
+		for(String candi:candis){
+			if(candi.toLowerCase().equals(ex))
+				return true;
+		}
+//		System.out.println("1: " + exText);
+		return false;
+	}
+
 	private String transformFormat(String link) {
 		link.replace(' ', '+');
 		link.replace("#", "%23");
@@ -260,8 +290,9 @@ public class ExpansionGenerator {
 	}
 
 	private boolean isExistWiki(String candi) {
+//		candi = candi.toLowerCase();
 		String name = candi.replaceAll(" ", "_");
-		String link = "http://en.wikipedia.org" + "/wiki/" + name;
+		String link = "http://en.wikipedia.org" + "/wiki/Special:Search/" + name;
 		try {
 			Document tmpdoc = Jsoup.connect(link).timeout(10000).userAgent("Mozilla").get();
 			if(tmpdoc != null){
@@ -269,12 +300,20 @@ public class ExpansionGenerator {
 				for(Element p: ps){
 					candi.setText(p.text());
 				}*/
+//				System.out.println(tmpdoc.title());
+				if(tmpdoc.title().contains("Search results"))
+					return false;
 				return true;
 			}
 				
+		} catch (SocketTimeoutException ste) {
+//			ste.printStackTrace();
+			System.out.println("connect wiki over time.");
+			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
+			System.out.println("not in wiki: "+ candi);
 			return false;
 		}
 		return true;

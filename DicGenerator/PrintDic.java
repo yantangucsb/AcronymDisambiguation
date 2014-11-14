@@ -322,7 +322,7 @@ public class PrintDic{
 		    while (it.hasNext()) {
 		        Map.Entry pairs = (Map.Entry)it.next();
 		        String name = (String) pairs.getKey();
-		        if(name.charAt(0) == 'S' || name.charAt(0) == 's')
+		        if(name.charAt(0) == 'A' || name.charAt(0) == 'a')
 		        	writer.write((String)pairs.getKey()+" ### "+(String)pairs.getValue()+"\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }
