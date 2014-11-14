@@ -103,10 +103,10 @@ public class PrintDic{
 		}
 	}
 	
-	public static void loadWords(HashMap<String, String> acronyms) {
+	public static void loadWords(HashMap<String, String> acronyms, String filename) {
 		BufferedReader br = null;
 	    try {
-	    	br = new BufferedReader(new FileReader("wiki/acronyms"));
+	    	br = new BufferedReader(new FileReader(filename));
 //	        StringBuilder sb = new StringBuilder();
 	        String line = br.readLine();
 	        while (line != null) {
@@ -299,10 +299,10 @@ public class PrintDic{
 		
 	}
 
-	public static void printList(ArrayList<String> waitWords) {
+	public static void printList(ArrayList<String> waitWords, String filename) {
 		BufferedWriter writer = null;
 		try{
-			writer = new BufferedWriter(new FileWriter("wiki/waitWords_T"));
+			writer = new BufferedWriter(new FileWriter(filename));
 			for(String ww : waitWords) {
 				writer.write(ww + "\r\n");
 			}
@@ -322,7 +322,7 @@ public class PrintDic{
 		    while (it.hasNext()) {
 		        Map.Entry pairs = (Map.Entry)it.next();
 		        String name = (String) pairs.getKey();
-		        if(name.charAt(0) == 'B' || name.charAt(0) == 'b')
+		        if(name.charAt(0) == 'S' || name.charAt(0) == 's')
 		        	writer.write((String)pairs.getKey()+" ### "+(String)pairs.getValue()+"\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }

@@ -36,7 +36,7 @@ public class WordsParser{
 	WordsParser(){
 		words = new HashMap<String, String>();
 		trainData = new HashMap<String, ArrayList<Candidate>>();
-		PrintDic.loadWords(words);
+		PrintDic.loadWords(words, "wiki/acronyms");
 		PrintDic.loadTrainData(trainData);
 /*		stopWord = new ArrayList<String>();
 		stopWord.add("TV"); //convert to read from file

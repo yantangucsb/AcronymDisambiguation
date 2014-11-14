@@ -25,18 +25,18 @@ public class ExpansionGenerator {
 	boolean linkfailed;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_T";
+		String filename = "wiki/candis_S";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
 		
-		PrintDic.loadWords(words);
+		PrintDic.loadWords(words, "wiki/acronyms");
 		PrintDic.loadExpansions(expansions, filename);
 		GetExpansions();
 //		GetExpansionsDF();
-		PrintDic.printSubAcr(words, "wiki/acronyms_T");
+		PrintDic.printSubAcr(words, "wiki/acronyms_S");
 		PrintDic.printExpansions(expansions, filename);
-		PrintDic.printList(waitWords);
+		PrintDic.printList(waitWords, "wiki/waitWords_S");
 	}
 
 	//for candis already processed with abbrevations.com
@@ -45,7 +45,7 @@ public class ExpansionGenerator {
 		while(it.hasNext()) {
 			Map.Entry pairs = (Map.Entry)it.next();
 			String name = (String) pairs.getKey();
-			if(name.charAt(0) != 'T' && name.charAt(0) != 't' )
+			if(name.charAt(0) != 'S' && name.charAt(0) != 's' )
 				continue;
 			ArrayList<String> candis = new ArrayList<String>();
 			if(expansions.containsKey(name)){
@@ -84,7 +84,7 @@ public class ExpansionGenerator {
 					continue;
 				}
 			}
-			if(name.charAt(0) != 'T' && name.charAt(0) != 't' )
+			if(name.charAt(0) != 'S' && name.charAt(0) != 's' )
 				continue;
 			linkfailed = false;
 			ArrayList<String> candis = getWordExpansion(words.get(name));
@@ -99,8 +99,10 @@ public class ExpansionGenerator {
 			if(linkfailed){
 				waitWords.add(name);
 			}
-			if(!linkfailed && (candis == null || candis.size() ==0))
+			if(!linkfailed && (candis == null || candis.size() ==0)){
 				it.remove();
+				System.out.println("rm acr: "+name);
+			}
 		}
 	}
 
