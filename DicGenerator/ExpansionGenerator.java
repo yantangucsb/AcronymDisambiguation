@@ -21,6 +21,7 @@ public class ExpansionGenerator {
 	ArrayList<String> waitWords;
 	boolean linkfailed;
 	boolean notExist;
+	boolean needRm;
 	
 	public ExpansionGenerator() {
 		String filename = "wiki/candisFull_A";
@@ -48,7 +49,7 @@ public class ExpansionGenerator {
 //		GetExpansions();
 		GetExpansionsDF();
 //		exFilter();
-//		PrintDic.printSubAcr(words, "wiki/acronymsFinal_B");
+		PrintDic.printSubAcr(words, "wiki/acronyms_C");
 		PrintDic.printExpansions(expansions, "wiki/candisDF_C1");
 //		PrintDic.printList(waitWords, "wiki/waitWords_A");
 	}
@@ -99,7 +100,9 @@ public class ExpansionGenerator {
 //				candis = getWordExpansion(words.get(name));
 //			}
 			if(!linkfailed){
+				needRm = false;
 				getWordExpansionDF(name, candis);
+				
 			}
 			
 			if(!linkfailed && candis != null && candis.size() != size){
@@ -110,6 +113,8 @@ public class ExpansionGenerator {
 			}
 			if(linkfailed)
 				waitWords.add(name);
+			if(needRm)
+				it.remove();
 		}
 		if(notExist)
 			System.out.println("Need repeat!");
@@ -241,6 +246,7 @@ public class ExpansionGenerator {
 				}
 				if(!isExist){
 //					System.out.println("No exist on FD:" + link);
+					needRm = true;
 					return;
 				}
 			}
