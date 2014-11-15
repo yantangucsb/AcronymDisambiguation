@@ -38,18 +38,18 @@ public class ExpansionGenerator {
 	}
 	
 	public ExpansionGenerator(int x) {
-		String filename = "wiki/candisFull_C";
+		String filename = "wiki/candisDF_C";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
 		
 		PrintDic.loadWords(words, "wiki/acronyms_C");
-//		PrintDic.loadExpansions(expansions, filename);
+		PrintDic.loadExpansions(expansions, filename);
 //		GetExpansions();
 		GetExpansionsDF();
 //		exFilter();
 //		PrintDic.printSubAcr(words, "wiki/acronymsFinal_B");
-		PrintDic.printExpansions(expansions, "wiki/candisDF_C");
+		PrintDic.printExpansions(expansions, "wiki/candisDF_C1");
 //		PrintDic.printList(waitWords, "wiki/waitWords_A");
 	}
 
@@ -79,6 +79,7 @@ public class ExpansionGenerator {
 	//for candis already processed with abbrevations.com
 	private void GetExpansionsDF() {
 		Iterator<Entry<String, String>> it = words.entrySet().iterator();
+		notExist = false;
 		while(it.hasNext()) {
 			Map.Entry pairs = (Map.Entry)it.next();
 			String name = (String) pairs.getKey();
@@ -97,17 +98,9 @@ public class ExpansionGenerator {
 //			else{
 //				candis = getWordExpansion(words.get(name));
 //			}
-			int count = 0;
-			while(!linkfailed && count < 3){
-				notExist = false;
+			if(!linkfailed){
 				getWordExpansionDF(name, candis);
-				if(notExist)
-					count++;
-				else
-					break;
 			}
-			if(count == 3)
-				System.out.println("not exist on fd: " + name);
 			
 			if(!linkfailed && candis != null && candis.size() != size){
 				expansions.put(name, candis);
@@ -118,6 +111,8 @@ public class ExpansionGenerator {
 			if(linkfailed)
 				waitWords.add(name);
 		}
+		if(notExist)
+			System.out.println("Need repeat!");
 		
 	}
 
@@ -231,9 +226,24 @@ public class ExpansionGenerator {
 			candis = new ArrayList<String> ();
 		}
 		link = transformFormat(link);
-		String curlink = "http://acronyms.thefreedictionary.com/"+link;
+		String curlink = "http://acronyms.thefreedictionary.com/"+ link +"?hl=en&SearchBy=1";
 		try {
 			Document expansionHtml = Jsoup.connect(curlink).timeout(10000).userAgent("Mozilla").get();
+			if(expansionHtml != null){
+				boolean isExist = true;
+				Elements metas = expansionHtml.select("META");
+				for(Element meta: metas){
+					String data = meta.attr("NAME");
+					if(data.equals("ROBOTS")){
+						isExist = false;
+						break;
+					}
+				}
+				if(!isExist){
+//					System.out.println("No exist on FD:" + link);
+					return;
+				}
+			}
 			Elements tables = expansionHtml.select("table");
 			if(tables.size() == 0)
 				return;
@@ -289,6 +299,7 @@ public class ExpansionGenerator {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //			System.out.println("not exist on fd: " + link);
+			notExist = true;
 			
 		}
 		return;
@@ -306,28 +317,28 @@ public class ExpansionGenerator {
 	}
 
 	private String transformFormat(String link) {
-		link.replace(' ', '+');
-		link.replace("#", "%23");
-		link.replace("$", "%24");
-		link.replace("%", "%25");
-		link.replace("&", "%26");
-		link.replace("'", "%27");
-		link.replace("+", "%2b");
-		link.replace(",", "%2c");
-		link.replace("/", "%2f");
-		link.replace(":", "%3a");
-		link.replace(";", "%3b");
-		link.replace("=", "%3d");
-		link.replace("?", "%3f");
-		link.replace("@", "%40");
-		link.replace("[", "%5b");
-		link.replace("\\", "%5c");
-		link.replace("]", "%5d");
-		link.replace("^", "%5e");
-		link.replace("`", "%60");
-		link.replace("{", "%7b");
-		link.replace("|", "%7c");
-		link.replace("}", "%7d");
+		link = link.replace(' ', '+');
+		link = link.replace("#", "%23");
+		link = link.replace("$", "%24");
+		link = link.replace("%", "%25");
+		link = link.replace("&", "%26");
+		link = link.replace("'", "%27");
+		link = link.replace("+", "%2b");
+		link = link.replace(",", "%2c");
+		link = link.replace("/", "%2f");
+		link = link.replace(":", "%3a");
+		link = link.replace(";", "%3b");
+		link = link.replace("=", "%3d");
+		link = link.replace("?", "%3f");
+		link = link.replace("@", "%40");
+		link = link.replace("[", "%5b");
+		link = link.replace("\\", "%5c");
+		link = link.replace("]", "%5d");
+		link = link.replace("^", "%5e");
+		link = link.replace("`", "%60");
+		link = link.replace("{", "%7b");
+		link = link.replace("|", "%7c");
+		link = link.replace("}", "%7d");
 		
 		return link;
 	}
