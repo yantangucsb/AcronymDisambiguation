@@ -110,7 +110,7 @@ public class PrintDic{
 //	        StringBuilder sb = new StringBuilder();
 	        String line = br.readLine();
 	        while (line != null) {
-	        	String[] tmp = line.split("###");
+	        	String[] tmp = line.split(" ### ");
 	        	int i = 0;
 	        	for(; i<tmp[i].length(); i++){
 	        		if(tmp[1].charAt(i) == '#'){
@@ -126,7 +126,7 @@ public class PrintDic{
 	        br.close();
 	        
 	    }catch(Exception e){
-	    	
+	    	System.out.println("load words failed!");
 	    }
 		
 	}

@@ -15,28 +15,65 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import TextModel.Candidate;
-import TextModel.TargetText;
-
 public class ExpansionGenerator {
 	HashMap<String, String> words;
 	HashMap<String, ArrayList<String>> expansions;
 	ArrayList<String> waitWords;
 	boolean linkfailed;
+	boolean notExist;
 	
 	public ExpansionGenerator() {
-		String filename = "wiki/candis_A";
+		String filename = "wiki/candisFull_A";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
 		
 		PrintDic.loadWords(words, "wiki/acronyms");
-//		PrintDic.loadExpansions(expansions, filename);
-		GetExpansions();
-//		GetExpansionsDF();
-		PrintDic.printSubAcr(words, "wiki/acronymsFull_A");
+		PrintDic.loadExpansions(expansions, filename);
+//		GetExpansions();
+		GetExpansionsDF();
+		PrintDic.printSubAcr(words, "wiki/acronyms_A");
 		PrintDic.printExpansions(expansions, filename);
 		PrintDic.printList(waitWords, "wiki/waitWords_A");
+	}
+	
+	public ExpansionGenerator(int x) {
+		String filename = "wiki/candisFull_B";
+		words = new HashMap<String, String>();
+		expansions = new HashMap<String, ArrayList<String>>();
+		waitWords = new ArrayList<String>();
+		
+		PrintDic.loadWords(words, "wiki/acronyms_B");
+		PrintDic.loadExpansions(expansions, filename);
+//		GetExpansions();
+		GetExpansionsDF();
+//		exFilter();
+//		PrintDic.printSubAcr(words, "wiki/acronymsFinal_B");
+		PrintDic.printExpansions(expansions, "wiki/candis_B");
+//		PrintDic.printList(waitWords, "wiki/waitWords_A");
+	}
+
+	private void exFilter() {
+		Iterator<Entry<String, String>> it = words.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry pairs = (Map.Entry)it.next();
+			String name = (String) pairs.getKey();
+			if(expansions.containsKey(name)){
+				ArrayList<String> candis = expansions.get(name);
+				for(int i=candis.size()-1; i>=0; i--){
+					String candi = candis.get(i);
+					if(!isExistWiki(candi)){
+						candis.remove(candi);
+					}
+				}
+				if(candis.size() == 0){
+					expansions.remove(name);
+					it.remove();
+					System.out.println("rm acr: " + name);
+				}
+			}
+		}
+		
 	}
 
 	//for candis already processed with abbrevations.com
@@ -45,22 +82,33 @@ public class ExpansionGenerator {
 		while(it.hasNext()) {
 			Map.Entry pairs = (Map.Entry)it.next();
 			String name = (String) pairs.getKey();
-			if(name.charAt(0) != 'A' && name.charAt(0) != 'a' )
-				continue;
+			
+			int size = 0;
 			ArrayList<String> candis = new ArrayList<String>();
 			linkfailed = false;
 			if(expansions.containsKey(name)){
 				candis = expansions.get(name);
-				if(candis.size() != 0 && !isExistWiki(candis.get(0)))
-					candis.remove(0);
+				size = candis.size();
+//				if(candis.size() != 0 && !isExistWiki(candis.get(0)))
+//					candis.remove(0);
 				
-			}else{
-				candis = getWordExpansion(words.get(name));
 			}
-			
-			if(!linkfailed)
+//			else{
+//				candis = getWordExpansion(words.get(name));
+//			}
+			int count = 0;
+			while(!linkfailed && count <= 3){
+				notExist = false;
 				getWordExpansionDF(name, candis);
-			if(!linkfailed && candis != null && candis.size() > 0){
+				if(notExist)
+					count++;
+				else
+					break;
+			}
+			if(count == 3)
+				System.out.println("not exist on fd: " + name);
+			
+			if(!linkfailed && candis != null && candis.size() != size){
 				expansions.put(name, candis);
 				System.out.println(name);
 				for(String candi : candis)
@@ -68,12 +116,6 @@ public class ExpansionGenerator {
 			}
 			if(linkfailed)
 				waitWords.add(name);
-			if(!linkfailed && (candis == null || candis.size() == 0)) {
-				if(expansions.containsKey(name))
-					expansions.remove(name);
-				it.remove();
-				System.out.println("rm the acr: " + name);
-			}
 		}
 		
 	}
@@ -177,7 +219,7 @@ public class ExpansionGenerator {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
-			
+			notExist = true;
 		}
 		
 		return candis;
@@ -245,7 +287,7 @@ public class ExpansionGenerator {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
-			System.out.println("not exist on fd: " + link);
+//			System.out.println("not exist on fd: " + link);
 			
 		}
 		return;
