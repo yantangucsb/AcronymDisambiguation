@@ -97,7 +97,7 @@ public class ExpansionGenerator {
 //				candis = getWordExpansion(words.get(name));
 //			}
 			int count = 0;
-			while(!linkfailed && count <= 3){
+			while(!linkfailed && count < 3){
 				notExist = false;
 				getWordExpansionDF(name, candis);
 				if(notExist)
