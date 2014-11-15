@@ -38,18 +38,18 @@ public class ExpansionGenerator {
 	}
 	
 	public ExpansionGenerator(int x) {
-		String filename = "wiki/candisFull_B";
+		String filename = "wiki/candisFull_C";
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
 		
-		PrintDic.loadWords(words, "wiki/acronyms_B");
-		PrintDic.loadExpansions(expansions, filename);
+		PrintDic.loadWords(words, "wiki/acronyms_C");
+//		PrintDic.loadExpansions(expansions, filename);
 //		GetExpansions();
 		GetExpansionsDF();
 //		exFilter();
 //		PrintDic.printSubAcr(words, "wiki/acronymsFinal_B");
-		PrintDic.printExpansions(expansions, "wiki/candis_B");
+		PrintDic.printExpansions(expansions, "wiki/candisDF_C");
 //		PrintDic.printList(waitWords, "wiki/waitWords_A");
 	}
 
@@ -87,8 +87,9 @@ public class ExpansionGenerator {
 			ArrayList<String> candis = new ArrayList<String>();
 			linkfailed = false;
 			if(expansions.containsKey(name)){
-				candis = expansions.get(name);
-				size = candis.size();
+				continue;
+//				candis = expansions.get(name);
+//				size = candis.size();
 //				if(candis.size() != 0 && !isExistWiki(candis.get(0)))
 //					candis.remove(0);
 				
