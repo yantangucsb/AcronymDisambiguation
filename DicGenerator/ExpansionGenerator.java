@@ -34,7 +34,7 @@ public class ExpansionGenerator {
 		if(x == 1)
 			exAddFromDF();
 		if(x == 2)
-			exCheckWiki();
+			exCheckWiki("C");
 		
 		
 	}
@@ -66,16 +66,17 @@ public class ExpansionGenerator {
 //		PrintDic.printList(waitWords, "wiki/waitWords_A");
 	}
 
-	private void exCheckWiki() {
-		PrintDic.loadWords(words, "wiki/OriginalAcr/acronyms_Z");
-		PrintDic.loadExpansions(expansions, "wiki/candis_Z");
+	private void exCheckWiki(String cur) {
+		PrintDic.loadWords(words, "wiki/OriginalAcr/acronyms_" + cur);
+		PrintDic.loadExpansions(expansions, "wiki/candis_" + cur);
 		HashMap<String, ArrayList<String>> expans1 = new HashMap<String, ArrayList<String>>();
 		HashMap<String, ArrayList<String>> expans2 = new HashMap<String, ArrayList<String>>();
-		PrintDic.loadExpansions(expans1, "wiki/candisDF_Z");	
-		PrintDic.loadExpansions(expans2, "wiki/candisFull_Z");	
+		PrintDic.loadExpansions(expans1, "wiki/candisDF_" + cur);	
+		PrintDic.loadExpansions(expans2, "wiki/candisFull_" + cur);	
 		exFilter(expans1, expans2);
-		PrintDic.printSubAcr(words, "wiki/acronymsFinal_Z");
-		PrintDic.printExpansions(expansions, "wiki/candis_Z");
+		PrintDic.printSubAcr(words, "wiki/acronymsFinal_" + cur);
+		PrintDic.printExpansions(expansions, "wiki/candis_" + cur);
+		PrintDic.printList(waitWords, "wiki/waitWords_" + cur);
 		
 	}
 	
@@ -102,22 +103,31 @@ public class ExpansionGenerator {
 				}
 			}
 			
-			do{
-				for(int i=candis1.size()-1; i>=0; i--){
-					String candi = candis1.get(i);
-					if(candisAll.contains(candi))
-						continue;
-					notExist = false;
-					if(!isExistWiki(candi)){
-						if(!notExist)
-							candis1.remove(candi);
-					}else if(!notExist){
-						candisAll.add(candi);
-						candis1.remove(candi);
-					}
-					
+			for(int i=candis1.size()-1; i>=0; i--){
+				String candi = candis1.get(i);
+				if(candisAll.contains(candi)){
+					candis1.remove(i);
+					continue;
 				}
-			}while(candis1.size() != 0);
+				if(candi.contains("[")){
+					candis1.remove(i);
+					continue;
+				}
+				notExist = false;
+				if(!isExistWiki(candi)){
+					if(!notExist)
+						candis1.remove(i);
+					else{
+						waitWords.add(candi);
+						candis1.remove(i);
+					}
+				}else{
+					candisAll.add(candi);
+					candis1.remove(i);
+				}
+				
+			}
+			
 			if(candisAll.isEmpty()){
 				it.remove();
 				System.out.println("rm acr: "+ name);
@@ -407,8 +417,8 @@ public class ExpansionGenerator {
 
 	private boolean isExistWiki(String candi) {
 //		candi = candi.toLowerCase();
-		String name = candi.replaceAll(" ", "_");
-		String link = "http://en.wikipedia.org" + "/wiki/Special:Search/" + name;
+		String name = candi.replace(' ', '_');
+		String link = "http://en.wikipedia.org/wiki/Special:Search/" + name;
 		try {
 			Document tmpdoc = Jsoup.connect(link).timeout(10000).userAgent("Mozilla").get();
 			if(tmpdoc != null){
@@ -429,6 +439,7 @@ public class ExpansionGenerator {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
+			System.out.println("Get failed: " + candi);
 			notExist = true;
 			return true;
 		}
