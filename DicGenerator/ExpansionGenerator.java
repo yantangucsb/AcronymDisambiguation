@@ -67,15 +67,15 @@ public class ExpansionGenerator {
 	}
 
 	private void exCheckWiki() {
-		PrintDic.loadWords(words, "wiki/OriginalAcr/acronyms_A");
-		PrintDic.loadExpansions(expansions, "wiki/candis_A");
+		PrintDic.loadWords(words, "wiki/OriginalAcr/acronyms_Z");
+		PrintDic.loadExpansions(expansions, "wiki/candis_Z");
 		HashMap<String, ArrayList<String>> expans1 = new HashMap<String, ArrayList<String>>();
 		HashMap<String, ArrayList<String>> expans2 = new HashMap<String, ArrayList<String>>();
-		PrintDic.loadExpansions(expans1, "wiki/candisDF_A");	
-		PrintDic.loadExpansions(expans2, "wiki/candisFull_A");	
+		PrintDic.loadExpansions(expans1, "wiki/candisDF_Z");	
+		PrintDic.loadExpansions(expans2, "wiki/candisFull_Z");	
 		exFilter(expans1, expans2);
-		PrintDic.printSubAcr(words, "wiki/acronymsFinal_A");
-		PrintDic.printExpansions(expansions, "wiki/candis_A");
+		PrintDic.printSubAcr(words, "wiki/acronymsFinal_Z");
+		PrintDic.printExpansions(expansions, "wiki/candis_Z");
 		
 	}
 	
@@ -102,14 +102,8 @@ public class ExpansionGenerator {
 				}
 			}
 			
-			boolean saveLast = false;
 			do{
 				for(int i=candis1.size()-1; i>=0; i--){
-					if(candis1.size() == 1 && candisAll.size() == 0){
-						candisAll.add(candis1.get(0));
-						saveLast = true;
-						break;
-					}
 					String candi = candis1.get(i);
 					if(candisAll.contains(candi))
 						continue;
@@ -123,7 +117,7 @@ public class ExpansionGenerator {
 					}
 					
 				}
-			}while(candis1.size() != 0 && !saveLast);
+			}while(candis1.size() != 0);
 			if(candisAll.isEmpty()){
 				it.remove();
 				System.out.println("rm acr: "+ name);
