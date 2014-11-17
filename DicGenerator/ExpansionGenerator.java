@@ -101,8 +101,15 @@ public class ExpansionGenerator {
 					}
 				}
 			}
+			
+			boolean saveLast = false;
 			do{
 				for(int i=candis1.size()-1; i>=0; i--){
+					if(candis1.size() == 1 && candisAll.size() == 0){
+						candisAll.add(candis1.get(0));
+						saveLast = true;
+						break;
+					}
 					String candi = candis1.get(i);
 					if(candisAll.contains(candi))
 						continue;
@@ -114,8 +121,9 @@ public class ExpansionGenerator {
 						candisAll.add(candi);
 						candis1.remove(candi);
 					}
+					
 				}
-			}while(candis1.size() != 0);
+			}while(candis1.size() != 0 && !saveLast);
 			if(candisAll.isEmpty()){
 				it.remove();
 				System.out.println("rm acr: "+ name);
