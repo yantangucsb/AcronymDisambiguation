@@ -11,6 +11,6 @@ public class GetWebContent {
 //		cp.testTFIDF();
 //		AcronymGenerator ag = new AcronymGenerator();
 //		ag.getAcronyms();
-		ExpansionGenerator eg = new ExpansionGenerator(1);
+		ExpansionGenerator eg = new ExpansionGenerator(2);
 	}
 }

@@ -23,58 +23,120 @@ public class ExpansionGenerator {
 	boolean notExist;
 	boolean needRm;
 	
-	public ExpansionGenerator() {
-		String filename = "wiki/candisFull_A";
+	public ExpansionGenerator(int x) {
+		
 		words = new HashMap<String, String>();
 		expansions = new HashMap<String, ArrayList<String>>();
 		waitWords = new ArrayList<String>();
 		
+		if(x == 0)
+			exInitialize();
+		if(x == 1)
+			exAddFromDF();
+		if(x == 2)
+			exCheckWiki();
+		
+		
+	}
+
+	private void exInitialize() {
+		String filename = "wiki/candisFull_A";
 		PrintDic.loadWords(words, "wiki/acronyms");
 		PrintDic.loadExpansions(expansions, filename);
-//		GetExpansions();
-		GetExpansionsDF();
+		GetExpansions();
+//		GetExpansionsDF();
 		PrintDic.printSubAcr(words, "wiki/acronyms_A");
 		PrintDic.printExpansions(expansions, filename);
 		PrintDic.printList(waitWords, "wiki/waitWords_A");
-	}
-	
-	public ExpansionGenerator(int x) {
-		String filename = "wiki/candisDF_C";
-		words = new HashMap<String, String>();
-		expansions = new HashMap<String, ArrayList<String>>();
-		waitWords = new ArrayList<String>();
 		
-		PrintDic.loadWords(words, "wiki/acronyms_C");
+	}
+
+	public void exAddFromDF() {
+		String filename = "wiki/candisDF_X";
+		PrintDic.loadWords(words, "wiki/acronyms_X");
 		PrintDic.loadExpansions(expansions, filename);
 //		GetExpansions();
-		GetExpansionsDF();
+		do{
+			GetExpansionsDF();
+		
 //		exFilter();
-		PrintDic.printSubAcr(words, "wiki/acronyms_C");
-		PrintDic.printExpansions(expansions, "wiki/candisDF_C1");
+		PrintDic.printSubAcr(words, "wiki/acronyms_X");
+		PrintDic.printExpansions(expansions, "wiki/candisDF_X");
+		}while(notExist);
 //		PrintDic.printList(waitWords, "wiki/waitWords_A");
 	}
 
-	private void exFilter() {
+	private void exCheckWiki() {
+		PrintDic.loadWords(words, "wiki/OriginalAcr/acronyms_A");
+		PrintDic.loadExpansions(expansions, "wiki/candis_A");
+		HashMap<String, ArrayList<String>> expans1 = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> expans2 = new HashMap<String, ArrayList<String>>();
+		PrintDic.loadExpansions(expans1, "wiki/candisDF_A");	
+		PrintDic.loadExpansions(expans2, "wiki/candisFull_A");	
+		exFilter(expans1, expans2);
+		PrintDic.printSubAcr(words, "wiki/acronymsFinal_A");
+		PrintDic.printExpansions(expansions, "wiki/candis_A");
+		
+	}
+	
+	//combine expansion files and filter
+	private void exFilter(HashMap<String, ArrayList<String>> expans1, HashMap<String, ArrayList<String>> expans2) {
 		Iterator<Entry<String, String>> it = words.entrySet().iterator();
 		while(it.hasNext()) {
 			Map.Entry pairs = (Map.Entry)it.next();
 			String name = (String) pairs.getKey();
-			if(expansions.containsKey(name)){
-				ArrayList<String> candis = expansions.get(name);
-				for(int i=candis.size()-1; i>=0; i--){
-					String candi = candis.get(i);
-					if(!isExistWiki(candi)){
-						candis.remove(candi);
+			ArrayList<String> candisAll = new ArrayList<String>();
+			ArrayList<String> candis1 = new ArrayList<String>();
+			ArrayList<String> candis2 = new ArrayList<String>();
+			if(expansions.containsKey(name))
+				candisAll = expansions.get(name);
+			if(expans1.containsKey(name)){
+				candis1 = expans1.get(name);
+			}
+			if(expans2.containsKey(name)){
+				candis2 = expans2.get(name);
+				for(String candis: candis2){
+					if(!isExistedEx(candis, candis1)){
+						candis1.add(candis);
 					}
 				}
-				if(candis.size() == 0){
-					expansions.remove(name);
-					it.remove();
-					System.out.println("rm acr: " + name);
+			}
+			do{
+				for(int i=candis1.size()-1; i>=0; i--){
+					String candi = candis1.get(i);
+					if(candisAll.contains(candi))
+						continue;
+					notExist = false;
+					if(!isExistWiki(candi)){
+						if(!notExist)
+							candis1.remove(candi);
+					}else if(!notExist){
+						candisAll.add(candi);
+						candis1.remove(candi);
+					}
 				}
+			}while(candis1.size() != 0);
+			if(candisAll.isEmpty()){
+				it.remove();
+			}else{
+				expansions.put(name, candisAll);
+				System.out.println(name);
+				for(String candi : candisAll)
+					System.out.println("ex: " + candi);
 			}
 		}
 		
+	}
+
+	private boolean isExistedEx(String exText, ArrayList<String> candis) {
+		
+		String ex = exText.toLowerCase();
+		for(String candi:candis){
+			if(candi.toLowerCase().equals(ex))
+				return true;
+		}
+//		System.out.println("1: " + exText);
+		return false;
 	}
 
 	//for candis already processed with abbrevations.com
@@ -311,25 +373,16 @@ public class ExpansionGenerator {
 		return;
 	}
 	
-	private boolean isExistedEx(String exText, ArrayList<String> candis) {
-		
-		String ex = exText.toLowerCase();
-		for(String candi:candis){
-			if(candi.toLowerCase().equals(ex))
-				return true;
-		}
-//		System.out.println("1: " + exText);
-		return false;
-	}
+	
 
 	private String transformFormat(String link) {
+		link = link.replace("%", "%25");
+		link = link.replace("+", "%2b");
 		link = link.replace(' ', '+');
 		link = link.replace("#", "%23");
 		link = link.replace("$", "%24");
-		link = link.replace("%", "%25");
 		link = link.replace("&", "%26");
 		link = link.replace("'", "%27");
-		link = link.replace("+", "%2b");
 		link = link.replace(",", "%2c");
 		link = link.replace("/", "%2f");
 		link = link.replace(":", "%3a");
@@ -373,8 +426,8 @@ public class ExpansionGenerator {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
-			System.out.println("not in wiki: "+ candi);
-			return false;
+			notExist = true;
+			return true;
 		}
 		return true;
 	}

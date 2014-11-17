@@ -81,7 +81,7 @@ public class PrintDic{
 		    while (it.hasNext()) {
 		        Map.Entry pairs = (Map.Entry)it.next();
 		        writer.write((String)pairs.getKey()+" ### "+(String)pairs.getValue()+"\r\n");
-		        it.remove(); // avoids a ConcurrentModificationException
+//		        it.remove(); // avoids a ConcurrentModificationException
 		    }
 		    writer.close();
 		    System.out.println("Success to file");
@@ -324,7 +324,7 @@ public class PrintDic{
 		        String name = (String) pairs.getKey();
 //		        if(name.charAt(0) == 'C' || name.charAt(0) == 'a')
 		        	writer.write((String)pairs.getKey()+" ### "+(String)pairs.getValue()+"\r\n");
-		        it.remove(); // avoids a ConcurrentModificationException
+//		        it.remove(); // avoids a ConcurrentModificationException
 		    }
 		    writer.close();
 		    System.out.println("Success to file");
