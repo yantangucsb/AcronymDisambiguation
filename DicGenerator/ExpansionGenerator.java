@@ -118,6 +118,7 @@ public class ExpansionGenerator {
 			}while(candis1.size() != 0);
 			if(candisAll.isEmpty()){
 				it.remove();
+				System.out.println("rm acr: "+ name);
 			}else{
 				expansions.put(name, candisAll);
 				System.out.println(name);
