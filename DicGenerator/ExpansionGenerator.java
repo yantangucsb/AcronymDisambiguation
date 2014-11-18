@@ -72,7 +72,7 @@ public class ExpansionGenerator {
 		HashMap<String, ArrayList<String>> expans1 = new HashMap<String, ArrayList<String>>();
 		HashMap<String, ArrayList<String>> expans2 = new HashMap<String, ArrayList<String>>();
 		PrintDic.loadExpansions(expans1, "wiki/candisDF_" + cur);	
-		PrintDic.loadExpansions(expans2, "wiki/candisFull_" + cur);	
+//		PrintDic.loadExpansions(expans2, "wiki/candisFull_" + cur);	
 		exFilter(expans1, expans2);
 		PrintDic.printSubAcr(words, "wiki/acronymsFinal_" + cur);
 		PrintDic.printExpansions(expansions, "wiki/candis_" + cur);
@@ -109,7 +109,7 @@ public class ExpansionGenerator {
 					candis1.remove(i);
 					continue;
 				}
-				if(candi.contains("[")){
+				if(candi.contains("[") || candi.contains("{")){
 					candis1.remove(i);
 					continue;
 				}

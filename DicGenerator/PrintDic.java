@@ -54,7 +54,6 @@ public class PrintDic{
 		    writer = new BufferedWriter( new FileWriter(filename));
 		    writer.write(doc.toString());
 		    System.out.println("Success to XML file");
-		    writer.close();
 
 		}
 		catch ( Exception e)
@@ -83,7 +82,6 @@ public class PrintDic{
 		        writer.write((String)pairs.getKey()+" ### "+(String)pairs.getValue()+"\r\n");
 //		        it.remove(); // avoids a ConcurrentModificationException
 		    }
-		    writer.close();
 		    System.out.println("Success to file");
 
 		}
@@ -123,11 +121,20 @@ public class PrintDic{
 	        	acronyms.put(tmp[0], tmp[1]);
 	            line = br.readLine();
 	        }
-	        br.close();
 	        
 	    }catch(Exception e){
 	    	System.out.println("load words failed!");
-	    }
+	    }finally
+		{
+		    try
+		    {
+		        if ( br != null)
+		        br.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
 		
 	}
 	public static void printTrainData(HashMap<String, ArrayList<Candidate>> trainData) {
@@ -147,7 +154,6 @@ public class PrintDic{
 //		        writer.write("\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }
-		    writer.close();
 		    System.out.println("Success to file");
 
 		}
@@ -187,7 +193,6 @@ public class PrintDic{
 	        	}
 	            line = br.readLine();
 	        }
-	        br.close();
 	        System.out.println("Load training data successfully.");
 
 		}
@@ -224,6 +229,16 @@ public class PrintDic{
 		}
 		catch ( Exception e)
 		{
+		}finally
+		{
+		    try
+		    {
+		        if ( br != null)
+		        br.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
 		}
 		return stopWords;
 	}
@@ -246,9 +261,18 @@ public class PrintDic{
 	    		}
 	    		writer.write("\r\n");;
 	    	}
-	    	writer.close();
 		}catch(Exception e){
 			System.out.println("Load expansion file failed.");
+		}finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
 		}
 	}
 
@@ -275,6 +299,16 @@ public class PrintDic{
 	        br.close();
 		}catch(Exception e){
 			System.out.println("Load expansion file candis_A failed.");
+		}finally
+		{
+		    try
+		    {
+		        if ( br != null)
+		        br.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
 		}
 	}
 
@@ -295,6 +329,16 @@ public class PrintDic{
 	    	writer.close();
 		}catch(Exception e){
 			System.out.println("Open and write expansion file candis_A failed.");
+		}finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
 		}
 		
 	}
@@ -309,6 +353,16 @@ public class PrintDic{
 			writer.close();
 		}catch(Exception e){
 			System.out.println("Open and write waitWords file candis_A failed.");
+		}finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
 		}
 		
 	}
