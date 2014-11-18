@@ -115,13 +115,13 @@ public class ExpansionGenerator {
 				}
 				notExist = false;
 				if(!isExistWiki(candi)){
-					if(!notExist)
-						candis1.remove(i);
-					else{
+					candis1.remove(i);
+				}else{
+					if(notExist){
 						waitWords.add(candi);
 						candis1.remove(i);
+						continue;
 					}
-				}else{
 					candisAll.add(candi);
 					candis1.remove(i);
 				}
@@ -435,6 +435,7 @@ public class ExpansionGenerator {
 		} catch (SocketTimeoutException ste) {
 //			ste.printStackTrace();
 			System.out.println("connect wiki over time.");
+			notExist = true;
 			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
