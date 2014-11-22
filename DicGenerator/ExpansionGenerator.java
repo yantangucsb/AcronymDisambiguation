@@ -15,6 +15,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import edu.stanford.nlp.process.Morphology;
+
 public class ExpansionGenerator {
 	HashMap<String, String> words;
 	HashMap<String, ArrayList<String>> expansions;
@@ -34,9 +36,44 @@ public class ExpansionGenerator {
 		if(x == 1)
 			exAddFromDF();
 		if(x == 2)
-			exCheckWiki("C");
+			exCheckWiki("V");
+		if(x == 3)
+			exFilterFinal();
 		
 		
+	}
+
+	private void exFilterFinal() {
+		PrintDic.loadExpansions(expansions, "wiki/finalTrainData/finalCandis");
+		Iterator<Entry<String, ArrayList<String>>> it = expansions.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry pairs = (Map.Entry)it.next();
+			String name = (String) pairs.getKey();
+			ArrayList<String> candis = (ArrayList<String>) pairs.getValue();
+			if(illegalEx(name, candis)){
+				it.remove();
+			}
+		}
+		PrintDic.printExpansions(expansions, "wiki/filteredCandis");
+	}
+
+	private boolean illegalEx(String name, ArrayList<String> candis) {
+		Morphology morp = new Morphology();
+		String tmpName = name.toLowerCase();
+		int count = 0;
+		if(candis.size() == 0)
+			return true;
+		for(String candi : candis) {
+			if(candi.contains(" "))
+				continue;
+			if(candi.toLowerCase().equals(tmpName))
+				return true;
+			if(morp.stem(candi).equals(tmpName))
+				count ++;
+		}
+		if(count == candis.size())
+			return true;
+		return false;
 	}
 
 	private void exInitialize() {
@@ -67,8 +104,8 @@ public class ExpansionGenerator {
 	}
 
 	private void exCheckWiki(String cur) {
-		PrintDic.loadWords(words, "wiki/OriginalAcr/acronyms_" + cur);
-		PrintDic.loadExpansions(expansions, "wiki/candis_" + cur);
+		PrintDic.loadWords(words, "wiki/acronyms_" + cur);
+//		PrintDic.loadExpansions(expansions, "wiki/candis_" + cur);
 		HashMap<String, ArrayList<String>> expans1 = new HashMap<String, ArrayList<String>>();
 		HashMap<String, ArrayList<String>> expans2 = new HashMap<String, ArrayList<String>>();
 		PrintDic.loadExpansions(expans1, "wiki/candisDF_" + cur);	

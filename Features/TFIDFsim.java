@@ -33,7 +33,7 @@ public class TFIDFsim extends Feature {
 			Candidate candi = (Candidate) pairs.getValue();
 			candi.tokenizeAndStem(stopWords);
 			HashMap<String, Integer> tfs = candi.getTF();
-			Iterator<Entry<String, Candidate>> TFit = candis.entrySet().iterator();
+			Iterator<Entry<String, Integer>> TFit = tfs.entrySet().iterator();
 			while(TFit.hasNext()){
 				Map.Entry TFpairs = (Map.Entry)TFit.next();
 				String word = (String) TFpairs.getKey();
@@ -55,17 +55,18 @@ public class TFIDFsim extends Feature {
 			Map.Entry pairs = (Map.Entry)it.next();
 			Candidate candi = (Candidate) pairs.getValue();
 			Double docweight = 0.0;
-			candi.tokenizeAndStem(stopWords);
+//			candi.tokenizeAndStem(stopWords);
 			HashMap<String, Integer> tfs = candi.getTF();
-			Iterator<Entry<String, Candidate>> TFit = candis.entrySet().iterator();
+			Iterator<Entry<String, Integer>> TFit = tfs.entrySet().iterator();
 			while(TFit.hasNext()){
 				Map.Entry TFpairs = (Map.Entry)TFit.next();
 				String word = (String) TFpairs.getKey();
 				if(idfs.containsKey(word)){
-					docweight += idfs.get(word)*(Integer) TFpairs.getValue();
+					docweight += idfs.get(word)*((Integer) TFpairs.getValue());
 				}
 			}
 			candi.setFeature(docweight.toString());
+			System.out.println("Get docweight " + docweight + " for ex: " +candi.getName());
 		}
 	}
 	

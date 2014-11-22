@@ -1,6 +1,9 @@
 package TrainDataGenerator;
+import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
+
+
 
 
 
@@ -28,7 +31,7 @@ public class ContentParser{
 		wordsparser = new WordsParser();
 		
 		links = new LinkedList<linkPage>();
-		String firstLink ="/wiki/Wikipedia";
+		String firstLink ="/wiki/GNU_General_Public_License";
 		String title = "Wikipedia";
 		links.add(new linkPage(firstLink, title));
 		fg = new FeatureGenerator();
@@ -41,7 +44,7 @@ public class ContentParser{
 //			Elements el = ;
 //			doc.appendChild(el);
 			
-			while(!links.isEmpty() && wordsparser.trainData.size()<=500){
+			while(!links.isEmpty() && wordsparser.trainData.size()<=10){
 				linkPage curpage = links.poll();
 				URL url = new URL(linkHead+curpage.link);
 //				URLConnection conn = url.openConnection();
@@ -58,7 +61,7 @@ public class ContentParser{
 //			wordsparser.printWords("wiki/acronymDic");
 //			wordsparser.printDic2Console();
 //			PrintDic.printXML2file(wordsparser.words, "wiki/acronymDic");
-//			wordsparser.printTrainData("wiki/traindata");
+			wordsparser.printTrainData();
 			
 			
 		} catch (Exception e) {
@@ -69,7 +72,7 @@ public class ContentParser{
 	}
 	
 	public void testTFIDF(){
-		fg.getBestCandi(wordsparser.words, wordsparser.trainData);
+		fg.getBestCandi(wordsparser.expansions, wordsparser.trainData);
 	}
 	public void getTextContent(Document tmpdoc, linkPage curpage){
 		try {
@@ -95,16 +98,40 @@ public class ContentParser{
 			if(tmpLink != null){
 				linkPage linkpage = new linkPage();
 				if(isEntity(tmpLink)){
-					linkpage.link = tmpLink;
-					String attrTitle = link.attr("title");
-					if(attrTitle != null)
-						linkpage.title = attrTitle;
 					links.add(linkpage);
-					wordsparser.getWords(link.text(), linkpage.title, p.text());
+					
+					linkpage.link = tmpLink;
+/*					String attrTitle = link.attr("title");
+					if(attrTitle != null)
+						linkpage.title = attrTitle;*/
+					
+					//get its expansion through the link
+					String ex = getCurEx(tmpLink);
+					if(ex.length() == 0)
+						continue;
+					
+					wordsparser.getWords(link.text(), ex, p.text());
 				}
 			}
 		}
 	}
+	
+	private String getCurEx(String tmpLink) {
+		String curlink = linkHead + tmpLink;
+		try {
+			Document expansionHtml = Jsoup.connect(curlink).timeout(10000).userAgent("Mozilla").get();
+			String title = expansionHtml.title();
+			if(title != null){
+				String[] titlePieces = title.split(" - ");
+				return titlePieces[0];
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
 	private boolean isEntity(String tmpLink) {
 		if(tmpLink.length() > 6 && (tmpLink.substring(0, 6)).equals("/wiki/")){
 			if(tmpLink.length() > 10 && (tmpLink.substring(0, 10).equals("/wiki/File") || tmpLink.substring(0, 10).equals("/wiki/Help")))

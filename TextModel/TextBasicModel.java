@@ -1,5 +1,7 @@
 package TextModel;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,10 +17,13 @@ public abstract class TextBasicModel {
 	HashMap<String, Integer> wordSum;
 	public TextBasicModel(){
 		wordSum = new HashMap<String, Integer>();
+		text = "";
+		name = "";
 	}
 	
 	public void tokenizeAndStem(ArrayList<String> stopWords) {
-		DocumentPreprocessor dp = new DocumentPreprocessor(text);
+		Reader reader = new StringReader(text);
+		DocumentPreprocessor dp = new DocumentPreprocessor(reader);
 		Iterator<List<HasWord>> it = dp.iterator();
 		while (it.hasNext()) {
 			List<HasWord> sentence = it.next();
@@ -26,9 +31,10 @@ public abstract class TextBasicModel {
 				Morphology morp = new Morphology();
 				StringBuilder wordStr = new StringBuilder();
 				wordStr.append(token);
-				if(stopWords.contains(wordStr.toString()))
+				String word = wordStr.toString().toLowerCase();
+				if(stopWords.contains(word))
 					continue;
-				String stemWord = morp.stem(wordStr.toString());
+				String stemWord = morp.stem(word);
 				add2WordSum(stemWord);
 			}
 		}
@@ -37,6 +43,7 @@ public abstract class TextBasicModel {
 	public HashMap<String, Integer> getTF() {
 		return wordSum;
 	}
+	
 	private void add2WordSum(String stemWord) {
 		if(wordSum.containsKey(stemWord)){
 			int count = wordSum.get(stemWord);

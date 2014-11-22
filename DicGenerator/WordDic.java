@@ -76,7 +76,7 @@ public class WordDic{
 	public void add2Expansions(Candidate temp) {
 		if(expansions.containsKey(temp.getName()))
 			return;
-		temp.getFeature();
+//		temp.getFeature();
 		expansions.put(temp.getName(), temp);		
 	}
 

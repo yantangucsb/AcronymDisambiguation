@@ -25,26 +25,28 @@ public class FeatureGenerator {
 		trainTexts = new ArrayList<TargetText>();
 	}
 
-	public void findExpansions(HashMap<String, String> words, HashMap<String, ArrayList<Candidate>> trainData) {
-		Iterator<Entry<String, ArrayList<Candidate>>> it = trainData.entrySet().iterator();
+	public void findExpansions(HashMap<String, ArrayList<String>> expansions, HashMap<String, ArrayList<TargetText>> trainData) {
+		Iterator<Entry<String, ArrayList<TargetText>>> it = trainData.entrySet().iterator();
 	    while (it.hasNext()) {
 	    	Map.Entry pairs = (Map.Entry)it.next();
 	    	String name = (String) pairs.getKey();
-	    	ArrayList<Candidate> candis = getWordExpansion(words.get(name)); //what if no expansions
-	    	if(candis != null){
-	    		if(candis.size() == 1)
-	    			continue;
-	    		WordDic newWord = new WordDic(name, candis);
-	    		ArrayList<Candidate> trainpara = (ArrayList<Candidate>) pairs.getValue();
-	    		for(Candidate para : trainpara){
-	    			TargetText tt = new TargetText(name, para.getName(), para.getText());
-	    			tt.setWordDic(newWord);
-	    			trainTexts.add(tt);
+	    	ArrayList<String> strs = expansions.get(name);
+	    	ArrayList<Candidate> candis = new ArrayList<Candidate>();
+	    	for(String str : strs){
+	    		Candidate candi = new Candidate(str);
+	    		int count = 0;
+	    		while(!isExistWiki(candi) && count < 3){
+	    			count ++;
 	    		}
-	    	}else{
-	    		//resolve it by adding an expansion manually
-	    		//maybe remove the item
+	    		candis.add(candi);
 	    	}
+	    	WordDic newWord = new WordDic(name, candis);
+	    	
+	    	ArrayList<TargetText> trainpara = (ArrayList<TargetText>) pairs.getValue();
+	    	for(TargetText tt : trainpara){
+    			tt.setWordDic(newWord);
+    			trainTexts.add(tt);
+    		}
 	    }
 	}
 	
@@ -119,11 +121,13 @@ public class FeatureGenerator {
 	
 	private boolean isExistWiki(Candidate candi) {
 		String name = candi.getName().replaceAll(" ", "_");
-		String link = "http://en.wikipedia.org" + "/wiki/" + name;
+		String link = "http://en.wikipedia.org/wiki/Special:Search/" + name;
 		try {
 			Document tmpdoc = Jsoup.connect(link).userAgent("Mozilla").get();
 			if(tmpdoc != null){
 				Elements ps = tmpdoc.select("p");
+				if(ps.size() != 0)
+					candi.setPrimeText(ps.get(0).text());
 				for(Element p: ps){
 					candi.setText(p.text());
 				}
@@ -145,8 +149,8 @@ public class FeatureGenerator {
 		return false;
 	}
 
-	public void getBestCandi(HashMap<String, String> words,
-			HashMap<String, ArrayList<Candidate>> trainData) {
+	public void getBestCandi(HashMap<String, ArrayList<String>> words,
+			HashMap<String, ArrayList<TargetText>> trainData) {
 		findExpansions(words, trainData);
 		int count = 0, successcount = 0;
 		for(TargetText tt: trainTexts){

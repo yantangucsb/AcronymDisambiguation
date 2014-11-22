@@ -13,6 +13,7 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public class Candidate extends TextBasicModel{
 	ArrayList<String> features;
+	String primeText;
 	
 	public Candidate(String attr) {
 		super();
@@ -27,8 +28,6 @@ public class Candidate extends TextBasicModel{
 	
 	private void initialize() {
 		features = new ArrayList<String>();
-		text = "";
-		wordSum = new HashMap<String, Integer>();
 	}
 	
 	public Candidate(String str1, String str2) {
@@ -54,6 +53,14 @@ public class Candidate extends TextBasicModel{
 	
 	public String getText() {
 		return text;
+	}
+	
+	public void setPrimeText(String str) {
+		primeText += str;
+	}
+	
+	public String getPrimeText() {
+		return primeText;
 	}
 	
 	public boolean hasText() {

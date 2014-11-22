@@ -17,6 +17,7 @@ public class TargetText extends TextBasicModel{
 	private ArrayList<String> trainDataWeka;
 	
 	public TargetText(String name, String ex, String text){
+		super();
 		this.name = name;
 		this.expansion = ex;
 		this.text = text;
@@ -79,11 +80,15 @@ public class TargetText extends TextBasicModel{
 		getfeatures();
 		
 		String bestCandiName = worddic.getBestCandi().getName();
-		if(expansion.equals(bestCandiName)){
+/*		if(expansion.equals(bestCandiName)){
 			System.out.println("Success in Example 1:" + expansion + " " + bestCandiName);
 			return true;
 		}
-		System.out.println("Failure in Example 1:" + expansion + " " + bestCandiName);
+		System.out.println("Failure in Example 1:" + expansion + " " + bestCandiName);*/
+		
+		//whether classify right or not cannot be judged on the similarity of names.
+		//Because the expansion may always within the doc or not.
+		System.out.println("Cur Acr's ex: " + bestCandiName);
 		return false;
 	}
 }

@@ -18,6 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import TextModel.Candidate;
+import TextModel.TargetText;
 
 public class PrintDic{
 	static String stopWordFile = "wiki/stopwords";
@@ -137,19 +138,19 @@ public class PrintDic{
 		}
 		
 	}
-	public static void printTrainData(HashMap<String, ArrayList<Candidate>> trainData) {
+	public static void printTrainData(HashMap<String, ArrayList<TargetText>> trainData) {
 		// TODO Auto-generated method stub
 		BufferedWriter writer = null;
 		try
 		{
 		    writer = new BufferedWriter( new FileWriter(trainDatafilename));
-		    Iterator<Entry<String, ArrayList<Candidate>>> it = trainData.entrySet().iterator();
+		    Iterator<Entry<String, ArrayList<TargetText>>> it = trainData.entrySet().iterator();
 		    while (it.hasNext()) {
 		        Map.Entry pairs = (Map.Entry)it.next();
 		        writer.write((String)pairs.getKey());
-		        ArrayList<Candidate> candis = (ArrayList<Candidate>)pairs.getValue();
-		        for(Candidate data: candis){
-		        	writer.write(" ### " + data.getName() + " ### " + data.getText() + '\n');
+		        ArrayList<TargetText> candis = (ArrayList<TargetText>)pairs.getValue();
+		        for(TargetText data: candis){
+		        	writer.write(" ### " + data.getExpansion() + " ### " + data.getText() + '\n');
 		        }
 //		        writer.write("\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
@@ -173,7 +174,7 @@ public class PrintDic{
 		}
 	}
 	
-	public static void loadTrainData(HashMap<String, ArrayList<Candidate>> trainData) {
+	public static void loadTrainData(HashMap<String, ArrayList<TargetText>> trainData) {
 		// TODO Auto-generated method stub
 		BufferedReader br = null;
 		try
@@ -181,14 +182,14 @@ public class PrintDic{
 			br = new BufferedReader( new FileReader(trainDatafilename));
 		    String line = br.readLine();
 	        while (line != null) {
-	        	String[] tmp = line.split("###");
+	        	String[] tmp = line.split(" ### ");
 	        	ArrayList<Candidate> al = new ArrayList<Candidate>();
-	        	Candidate candi = new Candidate(tmp[1], tmp[2]);
+	        	TargetText tt = new TargetText(tmp[0], tmp[1], tmp[2]);
 	        	if(trainData.containsKey(tmp[0])){
-	        		trainData.get(tmp[0]).add(candi);
+	        		trainData.get(tmp[0]).add(tt);
 	        	}else{
-	        		ArrayList<Candidate> paras = new ArrayList<Candidate>();
-	        		paras.add(candi);
+	        		ArrayList<TargetText> paras = new ArrayList<TargetText>();
+	        		paras.add(tt);
 	        		trainData.put(tmp[0], paras);
 	        	}
 	            line = br.readLine();

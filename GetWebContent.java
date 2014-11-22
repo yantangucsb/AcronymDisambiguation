@@ -6,11 +6,11 @@ import DicGenerator.PrintDic;
 public class GetWebContent {
 	public static void main(String[] args) {
  
-//		ContentParser cp = new ContentParser();
-//		cp.getContentDoc();
-//		cp.testTFIDF();
+		ContentParser cp = new ContentParser();
+//		cp.geneTrainData();
+		cp.testTFIDF();
 //		AcronymGenerator ag = new AcronymGenerator();
 //		ag.getAcronyms();
-		ExpansionGenerator eg = new ExpansionGenerator(2);
+//		ExpansionGenerator eg = new ExpansionGenerator(3);
 	}
 }

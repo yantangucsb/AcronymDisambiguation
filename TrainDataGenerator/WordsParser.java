@@ -21,6 +21,7 @@ import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 
 import TextModel.Candidate;
+import TextModel.TargetText;
 import DicGenerator.AcronymGenerator;
 import DicGenerator.PrintDic;
 import DicGenerator.WordDic;
@@ -29,14 +30,14 @@ import DicGenerator.linkPage;
 
 public class WordsParser{
 	public String para;
-	HashMap<String, String> words;
-	public HashMap<String, ArrayList<Candidate>> trainData;
+	HashMap<String, ArrayList<String>> expansions;
+	public HashMap<String, ArrayList<TargetText>> trainData;
 	ArrayList<String> stopWord;
 	
 	WordsParser(){
-		words = new HashMap<String, String>();
-		trainData = new HashMap<String, ArrayList<Candidate>>();
-		PrintDic.loadWords(words, "wiki/acronyms");
+		expansions = new HashMap<String, ArrayList<String>>();
+		trainData = new HashMap<String, ArrayList<TargetText>>();
+		PrintDic.loadExpansions(expansions, "wiki/filteredCandis");
 		PrintDic.loadTrainData(trainData);
 /*		stopWord = new ArrayList<String>();
 		stopWord.add("TV"); //convert to read from file
@@ -46,12 +47,12 @@ public class WordsParser{
 		
 	}
 	
-	void getWords(String text, String title, String string){
-		if(!words.containsKey(text))
+	void getWords(String text, String title, String para){
+		if(!expansions.containsKey(text))
 			return;
-		Candidate trainpara = new Candidate(title, string);
-		add2TrainData(text, trainpara);
-		System.out.println("find a papra:" + text +"    "+ string);
+		
+		add2TrainData(text, title, para);
+		System.out.println("find a para:" + text +"    "+ title);
 	}
 	
 /*	void addAcronym(String tmpword) {
@@ -93,12 +94,14 @@ public class WordsParser{
 		
 	}*/
 	
-	private void add2TrainData(String text, Candidate candi) {
-		if(trainData.containsKey(candi)){
-			trainData.get(candi).add(candi);
+	private void add2TrainData(String text, String title, String para) {
+		TargetText tt = new TargetText(text, title, para);
+		
+		if(trainData.containsKey(text)){
+			trainData.get(text).add(tt);
 		}else{
-			ArrayList<Candidate> paras = new ArrayList<Candidate>();
-			paras.add(candi);
+			ArrayList<TargetText> paras = new ArrayList<TargetText>();
+			paras.add(tt);
 			trainData.put(text, paras);
 		}
 	}
