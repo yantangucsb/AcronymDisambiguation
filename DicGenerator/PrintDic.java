@@ -401,4 +401,36 @@ public class PrintDic{
 		}
 		
 	}
+
+	public static void printAnchorData(ArrayList<WordDic> fullData,
+			String filename) {
+		BufferedWriter writer = null;
+		try
+		{
+		    writer = new BufferedWriter( new FileWriter(filename));
+		    for(WordDic wd : fullData){
+//		    	System.out.println(wd.printData());
+		    	writer.write(wd.printData());
+		    }
+		    writer.close();
+		    System.out.println("Success to file");
+
+		}
+		catch ( Exception e)
+		{
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
+		
+		
+	}
 }

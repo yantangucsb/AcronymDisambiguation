@@ -14,6 +14,8 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 public class Candidate extends TextBasicModel{
 	ArrayList<String> features;
 	String primeText;
+	String title;
+	ArrayList<String> anchorText;
 	
 	public Candidate(String attr) {
 		super();
@@ -28,6 +30,9 @@ public class Candidate extends TextBasicModel{
 	
 	private void initialize() {
 		features = new ArrayList<String>();
+		anchorText = new ArrayList<String>();
+		title = "";
+		primeText = "";
 	}
 	
 	public Candidate(String str1, String str2) {
@@ -71,6 +76,28 @@ public class Candidate extends TextBasicModel{
 
 	public void setFeature(String str) {
 		features.add(str);
+	}
+
+	public void setTitle(String t) {
+		this.title = t;
+		
+	}
+
+	public String getTitle() {
+		return this.title;
+	}
+
+	public void setAnchorData(String text) {
+		anchorText.add(text);
+	}
+
+	public String getAnchorString() {
+		String output = "";
+		
+		for(String str: anchorText){
+			output += " ### " + str;
+		}
+		return output;
 	}
 
 }

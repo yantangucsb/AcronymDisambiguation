@@ -77,7 +77,8 @@ public class WordDic{
 		if(expansions.containsKey(temp.getName()))
 			return;
 //		temp.getFeature();
-		expansions.put(temp.getName(), temp);		
+		expansions.put(temp.getName(), temp);
+		System.out.println(temp.getName() + "added successfully");
 	}
 
 	public HashMap<String, Candidate> getExpansions() {
@@ -106,5 +107,20 @@ public class WordDic{
 			}
 		}
 		return bestCandi;
+	}
+
+	public String printData() {
+		String output = "";
+		Iterator<Entry<String, Candidate>> it = expansions.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Candidate candi = (Candidate) pairs.getValue();
+			output += name + " ### " + candi.getName() + " ### ";
+			output += candi.getText();
+			output += candi.getAnchorString();
+			output += "\n";
+			
+		}
+		return output;
 	}
 }

@@ -1,16 +1,16 @@
 import TrainDataGenerator.ContentParser;
-import DicGenerator.AcronymGenerator;
-import DicGenerator.ExpansionGenerator;
-import DicGenerator.PrintDic;
+import DicGenerator.*;
 
 public class GetWebContent {
 	public static void main(String[] args) {
  
-		ContentParser cp = new ContentParser();
+//		ContentParser cp = new ContentParser();
 //		cp.geneTrainData();
-		cp.testTFIDF();
+//		cp.testTFIDF();
 //		AcronymGenerator ag = new AcronymGenerator();
 //		ag.getAcronyms();
 //		ExpansionGenerator eg = new ExpansionGenerator(3);
+		AnchorDataGenerator adg = new AnchorDataGenerator();
+		adg.getAnchorData();
 	}
 }
