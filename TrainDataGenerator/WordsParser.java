@@ -38,7 +38,7 @@ public class WordsParser{
 		expansions = new HashMap<String, ArrayList<String>>();
 		trainData = new HashMap<String, ArrayList<TargetText>>();
 		PrintDic.loadExpansions(expansions, "wiki/filteredCandis");
-		PrintDic.loadTrainData(trainData);
+		PrintDic.loadTrainData(trainData, "wiki/traindata");
 /*		stopWord = new ArrayList<String>();
 		stopWord.add("TV"); //convert to read from file
 		stopWord.add("II");
@@ -107,6 +107,6 @@ public class WordsParser{
 	}
 
 	public void printTrainData() {
-		PrintDic.printTrainData(trainData);		
+		PrintDic.printTrainData(trainData, "wiki/traindata");		
 	}
 }

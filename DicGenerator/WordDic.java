@@ -73,6 +73,12 @@ public class WordDic{
 		return true;		
 	}*/
 
+	public WordDic(String[] tmp) {
+		this.name = tmp[0];
+		expansions = new HashMap<String, Candidate>();
+		setData(tmp);
+	}
+
 	public void add2Expansions(Candidate temp) {
 		if(expansions.containsKey(temp.getName()))
 			return;
@@ -85,14 +91,7 @@ public class WordDic{
 		return expansions;
 	}
 
-	private String setTagger(String text) {
-		 MaxentTagger tagger = new MaxentTagger("taggers/left3words-distsim-wsj-0-18.tagger");
-		 String tagged = tagger.tagString(text);
-		 return tagged;
-//		 System.out.println(tagged);
-	}
-
-	public Candidate getBestCandi() {
+/*	public Candidate getBestCandi() {
 		double max = 0.0;
 		Candidate bestCandi = null;
 		Iterator<Entry<String, Candidate>> it = expansions.entrySet().iterator();
@@ -107,7 +106,7 @@ public class WordDic{
 			}
 		}
 		return bestCandi;
-	}
+	}*/
 
 	public String printData() {
 		String output = "";
@@ -116,11 +115,27 @@ public class WordDic{
 			Map.Entry pairs = (Map.Entry)it.next();
 			Candidate candi = (Candidate) pairs.getValue();
 			output += name + " ### " + candi.getName() + " ### ";
+			output += Integer.toString(candi.getViewNum()) + " ### ";
+			output += candi.getPrimeText() + " ### ";
 			output += candi.getText();
 			output += candi.getAnchorString();
 			output += "\n";
 			
 		}
 		return output;
+	}
+	
+	public void setData(String[] tmp) {
+		Candidate candi = new Candidate();
+		candi.setName(tmp[1]);
+		candi.setViewNum(Integer.parseInt(tmp[2]));
+		candi.setPrimeText(tmp[3]);
+		candi.setText(tmp[4]);
+		candi.setAnchorData(tmp[5]);
+		expansions.put(candi.getName(), candi);
+	}
+
+	public String getName() {
+		return name;
 	}
 }

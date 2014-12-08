@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import Features.Feature;
 import edu.stanford.nlp.ling.HasWord;
@@ -12,10 +14,12 @@ import edu.stanford.nlp.process.Morphology;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 public class Candidate extends TextBasicModel{
-	ArrayList<String> features;
+//	ArrayList<String> features;
 	String primeText;
 	String title;
 	ArrayList<String> anchorText;
+	int viewNum;
+	double dl;
 	
 	public Candidate(String attr) {
 		super();
@@ -29,10 +33,11 @@ public class Candidate extends TextBasicModel{
 	}
 	
 	private void initialize() {
-		features = new ArrayList<String>();
+//		features = new ArrayList<String>();
 		anchorText = new ArrayList<String>();
 		title = "";
 		primeText = "";
+		viewNum = 0;
 	}
 	
 	public Candidate(String str1, String str2) {
@@ -40,9 +45,9 @@ public class Candidate extends TextBasicModel{
 		text = str2;
 	}
 
-	public ArrayList<String> getFeature() {
+/*	public ArrayList<String> getFeature() {
 		return features;
-	}
+	}*/
 
 	public void setName(String text) {
 		name = text;
@@ -53,15 +58,15 @@ public class Candidate extends TextBasicModel{
 	}
 	
 	public void setText(String str) {
-		text += str;
+		text += preprocess(str);
 	}
-	
+
 	public String getText() {
 		return text;
 	}
 	
 	public void setPrimeText(String str) {
-		primeText += str;
+		primeText += preprocess(str);;
 	}
 	
 	public String getPrimeText() {
@@ -74,9 +79,9 @@ public class Candidate extends TextBasicModel{
 		return true;
 	}
 
-	public void setFeature(String str) {
+/*	public void setFeature(String str) {
 		features.add(str);
-	}
+	}*/
 
 	public void setTitle(String t) {
 		this.title = t;
@@ -88,7 +93,7 @@ public class Candidate extends TextBasicModel{
 	}
 
 	public void setAnchorData(String text) {
-		anchorText.add(text);
+		anchorText.add(preprocess(text));
 	}
 
 	public String getAnchorString() {
@@ -98,6 +103,36 @@ public class Candidate extends TextBasicModel{
 			output += " ### " + str;
 		}
 		return output;
+	}
+
+	public void setViewNum(int num) {
+		this.viewNum = num;
+		
+	}
+
+	public int getViewNum() {
+		return this.viewNum;
+	}
+	
+	public void tokenize(ArrayList<String> stopWords) {
+		this.tokenizeAndStem(text, stopWords);
+		for(String str : this.anchorText){
+			this.tokenizeAndStem(str, stopWords);
+		}
+		
+	}
+
+	public ArrayList<String> getAnchorText() {
+		return this.anchorText;
+	}
+
+	public double getDocLength() {
+		int dl = 0;
+		dl += this.text.length();
+		for(String str: this.anchorText) {
+			dl += str.length();
+		}
+		return dl;
 	}
 
 }

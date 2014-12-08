@@ -6,39 +6,44 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import DicGenerator.WordDic;
-import Features.CommonTermsNum;
-import Features.Feature;
-import Features.TFIDFsim;
+import Features.*;
 
 public class TargetText extends TextBasicModel{
 	String expansion;
-	WordDic worddic;
-	private ArrayList<Feature> features;
-	private ArrayList<String> trainDataWeka;
+	ArrayList<Integer> AcrIndex;
+//	WordDic worddic;
+	
+	private ArrayList<ArrayList<String>> trainDataWeka;
 	
 	public TargetText(String name, String ex, String text){
 		super();
 		this.name = name;
 		this.expansion = ex;
-		this.text = text;
+		this.text = preprocess(text);
 		initialize();
 	}
 	
 	public void initialize() {
-		features = new ArrayList<Feature>();
-		addExistFeatures();
+		trainDataWeka = new ArrayList<ArrayList<String>>();
 	}
-	public void setWordDic(WordDic wd) {
+/*	public void setWordDic(WordDic wd) {
 		worddic = wd;
-	}
+	}*/
 	
-	private void addExistFeatures() {
-//		features.add(new CommonTermsNum());
-		features.add(new TFIDFsim());
+	public void initWekaData(WordDic wd) {
+		Iterator<Entry<String, Candidate>> it = wd.getExpansions().entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry<String, Candidate> pairs = it.next();
+			Candidate candi = pairs.getValue();
+			ArrayList<String> featureSeq = new ArrayList<String>();
+			featureSeq.add(candi.getName());
+			trainDataWeka.add(featureSeq);
+		}
 	}
+
 	
-	public void getfeatures() {
-/*		for(Candidate trainPara : trainText) {
+/*	public void getfeatures(WordDic worddic) {
+		for(Candidate trainPara : trainText) {
 			trainPara.tokenizeAndStem();
 			Iterator<Entry<String, Candidate>> it = expansions.entrySet().iterator();
 			while(it.hasNext()){
@@ -51,17 +56,21 @@ public class TargetText extends TextBasicModel{
 				String isSame = (trainPara.name.equals(candi.name))? "Y":"N";
 				set2WekaData(isSame);
 			}
-		}*/
-		for(Feature f: features){
-			f.setFeature(this, worddic);
 		}
+		initWekaData(worddic);
 
-	}
+	}*/
 	
-	private void set2WekaData(String isSame) {
-		String trainLine = "";
-		//get feature from candidate
-		trainDataWeka.add(trainLine);
+	public void set2WekaData(String name, String feature) {
+		boolean setSuccess = false;
+		for(ArrayList<String> seq : trainDataWeka){
+			if(name == seq.get(0)){
+				seq.add(feature);
+				setSuccess = true;
+			}
+		}
+		assert(setSuccess == false);
+		return;
 	}
 
 	public String getName() {
@@ -75,20 +84,58 @@ public class TargetText extends TextBasicModel{
 	public String getText() {
 		return text;
 	}
+	
+	public void tokenize(ArrayList<String> stopWords) {
+		this.tokenizeAndStem(text, stopWords);
+	}
 
-	public boolean getBestCandi() {
-		getfeatures();
+	public String printFeatures() {
+		String output = "";
+		for(ArrayList<String> al : trainDataWeka) {
+			for(int i=1; i<al.size(); i++)
+				output += al.get(i) + " ";
+			if(al.get(0).equals(this.expansion))
+				output += "yes\n";
+			else
+				output += "no\n";
+		}
+		return output;
+	}
+	
+	public ArrayList<ArrayList<String>> getWekaData(){
+		return this.trainDataWeka;
+	}
+
+	public void setHighlightIndex() {
+		if(AcrIndex == null){
+			AcrIndex = new ArrayList<Integer>();
+		}
 		
-		String bestCandiName = worddic.getBestCandi().getName();
-/*		if(expansion.equals(bestCandiName)){
+		int index = this.text.indexOf(name);
+		while(index >= 0) {
+			AcrIndex.add(index);
+			index = this.text.indexOf(name, index + 1);
+		}
+		
+	}
+	
+	public ArrayList<Integer> getHighlightIndex() {
+		return this.AcrIndex;
+	}
+
+/*	public boolean getBestCandi(WordDic wd) {
+		getfeatures(wd);
+		
+		String bestCandiName = wd.getBestCandi().getName();
+		if(expansion.equals(bestCandiName)){
 			System.out.println("Success in Example 1:" + expansion + " " + bestCandiName);
 			return true;
 		}
-		System.out.println("Failure in Example 1:" + expansion + " " + bestCandiName);*/
+		System.out.println("Failure in Example 1:" + expansion + " " + bestCandiName);
 		
 		//whether classify right or not cannot be judged on the similarity of names.
 		//Because the expansion may always within the doc or not.
 		System.out.println("Cur Acr's ex: " + bestCandiName);
 		return false;
-	}
+	}*/
 }

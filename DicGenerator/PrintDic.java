@@ -138,19 +138,18 @@ public class PrintDic{
 		}
 		
 	}
-	public static void printTrainData(HashMap<String, ArrayList<TargetText>> trainData) {
+	public static void printTrainData(HashMap<String, ArrayList<TargetText>> trainData, String filename) {
 		// TODO Auto-generated method stub
 		BufferedWriter writer = null;
 		try
 		{
-		    writer = new BufferedWriter( new FileWriter(trainDatafilename));
+		    writer = new BufferedWriter( new FileWriter(filename));
 		    Iterator<Entry<String, ArrayList<TargetText>>> it = trainData.entrySet().iterator();
 		    while (it.hasNext()) {
 		        Map.Entry pairs = (Map.Entry)it.next();
-		        writer.write((String)pairs.getKey());
 		        ArrayList<TargetText> candis = (ArrayList<TargetText>)pairs.getValue();
 		        for(TargetText data: candis){
-		        	writer.write(" ### " + data.getExpansion() + " ### " + data.getText() + '\n');
+		        	writer.write((String)pairs.getKey() + " ### " + data.getExpansion() + " ### " + data.getText() + '\n');
 		        }
 //		        writer.write("\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
@@ -174,12 +173,12 @@ public class PrintDic{
 		}
 	}
 	
-	public static void loadTrainData(HashMap<String, ArrayList<TargetText>> trainData) {
+	public static void loadTrainData(HashMap<String, ArrayList<TargetText>> trainData, String filename) {
 		// TODO Auto-generated method stub
 		BufferedReader br = null;
 		try
 		{
-			br = new BufferedReader( new FileReader(trainDatafilename));
+			br = new BufferedReader( new FileReader(filename));
 		    String line = br.readLine();
 	        while (line != null) {
 	        	String[] tmp = line.split(" ### ");
@@ -430,7 +429,180 @@ public class PrintDic{
 		    {
 		    }
 		}
+	}
+
+	public static void loadTrainData(ArrayList<TargetText> trainData,
+			String filename) {
+		BufferedReader br = null;
+		try
+		{
+			br = new BufferedReader( new FileReader(filename));
+		    String line = br.readLine();
+	        while (line != null) {
+	        	String[] tmp = line.split(" ### ");
+	        	ArrayList<Candidate> al = new ArrayList<Candidate>();
+	        	TargetText tt = new TargetText(tmp[0], tmp[1], tmp[2]);
+	        	trainData.add(tt);
+	            line = br.readLine();
+	        }
+	        System.out.println("Load training data successfully.");
+
+		}
+		catch ( Exception e)
+		{
+			System.out.println("open training data file failed.");
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( br != null)
+		        br.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
 		
+	}
+
+	public static void loadDic(ArrayList<WordDic> dic, String filename) {
+		BufferedReader br = null;
+		try
+		{
+			br = new BufferedReader( new FileReader(filename));
+		    String line = br.readLine();
+	        while (line != null) {
+	        	String[] tmp = line.split(" ### ");
+	        	boolean included = false;
+	        	for(WordDic wd: dic){
+	        		if(wd.getName().equals(tmp[0])){
+	        			wd.setData(tmp);
+	        			included = true;
+	        		}
+	        	}
+	        	if(!included){
+	        		WordDic wd = new WordDic(tmp);
+	        		dic.add(wd);
+	        	}
+	            line = br.readLine();
+	        }
+	        System.out.println("Load training data successfully.");
+
+		}
+		catch ( Exception e)
+		{
+			System.out.println("open training data file failed.");
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( br != null)
+		        br.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
+		
+	}
+
+	public static void printWekafile(String output, String filename) {
+		BufferedWriter writer = null;
+		try
+		{
+		    writer = new BufferedWriter( new FileWriter(filename));
+		    writer.write(output);
+		    writer.close();
+		    System.out.println("Success to file");
+
+		}
+		catch ( Exception e)
+		{
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
+		
+	}
+
+	public static ArrayList<String> loadTestData(String filename) {
+		BufferedReader br = null;
+		try
+		{
+			br = new BufferedReader( new FileReader(filename));
+			ArrayList<String> strs = new ArrayList<String>();
+		    String line = br.readLine();
+	        while (line != null) {
+	        	strs.add(line);
+	            line = br.readLine();
+	        }
+	        return strs;
+
+		}
+		catch ( Exception e)
+		{
+			System.out.println("open testing data file failed.");
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( br != null)
+		        br.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
+		return null;
+		
+		
+	}
+
+	public static void loadWordDic(HashMap<String, WordDic> dic, String filename) {
+		BufferedReader br = null;
+		try
+		{
+			br = new BufferedReader( new FileReader(filename));
+		    String line = br.readLine();
+	        while (line != null) {
+	        	String[] tmp = line.split(" ### ");
+	        	if(dic.containsKey(tmp[0])){
+	        		dic.get(tmp[0]).setData(tmp);
+	        	}else{
+	        		WordDic wd = new WordDic(tmp);
+	        		dic.put(tmp[0], wd);
+	        	}
+	            line = br.readLine();
+	        }
+	        System.out.println("Load training data successfully.");
+
+		}
+		catch ( Exception e)
+		{
+			System.out.println("open training data file failed.");
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( br != null)
+		        br.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
 		
 	}
 }

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
@@ -21,7 +23,7 @@ public abstract class TextBasicModel {
 		name = "";
 	}
 	
-	public void tokenizeAndStem(ArrayList<String> stopWords) {
+	public void tokenizeAndStem(String text, ArrayList<String> stopWords) {
 		Reader reader = new StringReader(text);
 		DocumentPreprocessor dp = new DocumentPreprocessor(reader);
 		Iterator<List<HasWord>> it = dp.iterator();
@@ -32,14 +34,37 @@ public abstract class TextBasicModel {
 				StringBuilder wordStr = new StringBuilder();
 				wordStr.append(token);
 				String word = wordStr.toString().toLowerCase();
+				//check word if it is legal
+				
 				if(stopWords.contains(word))
 					continue;
+				if(word.length() == 1){
+					continue;
+				}
+				if(!Pattern.matches("[a-zA-Z]+", word)){
+					if(isYearOrComplexWord(word))
+						add2WordSum(word);
+					continue;
+				}
 				String stemWord = morp.stem(word);
 				add2WordSum(stemWord);
 			}
 		}
 	}
 	
+	private boolean isYearOrComplexWord(String word) {
+		if(Pattern.matches("[0-9]", word)){
+			
+		}
+		return false;
+	}
+	
+	public String preprocess(String str) {
+		Pattern p = Pattern.compile("\\[(.)*\\]");
+		Matcher m = p.matcher(str);
+		return m.replaceAll("");
+	}
+
 	public HashMap<String, Integer> getTF() {
 		return wordSum;
 	}

@@ -44,7 +44,7 @@ public class FeatureGenerator {
 	    	
 	    	ArrayList<TargetText> trainpara = (ArrayList<TargetText>) pairs.getValue();
 	    	for(TargetText tt : trainpara){
-    			tt.setWordDic(newWord);
+//    			tt.setWordDic(newWord);
     			trainTexts.add(tt);
     		}
 	    }
@@ -154,8 +154,8 @@ public class FeatureGenerator {
 		findExpansions(words, trainData);
 		int count = 0, successcount = 0;
 		for(TargetText tt: trainTexts){
-			if(tt.getBestCandi())
-				successcount++;
+//			if(tt.getBestCandi())
+//				successcount++;
 			count++;
 		}
 		System.out.println("Success percentage: " + (double)successcount/count*100);
