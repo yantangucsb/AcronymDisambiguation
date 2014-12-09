@@ -23,7 +23,7 @@ public class AnchorDataGenerator {
 	
 	public AnchorDataGenerator() {
 		expansions = new HashMap<String, ArrayList<String>>();
-		PrintDic.loadExpansions(expansions, "wiki/testData");
+		PrintDic.loadExpansions(expansions, "wiki/testDic");
 		fullData = new ArrayList<WordDic>();
 		titles = new HashSet<String>();
 		tts = new HashMap<String, ArrayList<TargetText>>();
@@ -43,8 +43,52 @@ public class AnchorDataGenerator {
 			if(wd.getExpansions().size() != 0)
 				fullData.add(wd);
 		}
-		PrintDic.printAnchorData(fullData, "wiki/anchorData");
-		PrintDic.printTrainData(tts, "wiki/traindata");
+		PrintDic.printAnchorData(fullData, "wiki/anchorData2");
+		PrintDic.printTrainData(tts, "wiki/traindata2");
+	}
+	
+	public void filterDic() {
+		String output ="";
+		Iterator<Entry<String, ArrayList<String>>> it = expansions.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry pairs = (Map.Entry)it.next();
+			ArrayList<String> candis = (ArrayList<String>) pairs.getValue();
+			for(String candi: candis) {
+				Candidate curCandi = new Candidate(candi);
+				String name = getWikiPage(curCandi, (String)pairs.getKey());
+				if(name.equals(candi))
+					continue;
+				String str = (String)pairs.getKey() + " ### " + candi + " ### " + name + '\n';
+				output += str;
+				System.out.println(str);
+			}
+		}
+		PrintDic.printLog(output, "tmplog");
+	}
+
+	private String getWikiPage(Candidate candi, String key) {
+		String name = candi.getName().replaceAll(" ", "_");
+		String link = "http://en.wikipedia.org/wiki/Special:Search/" + name;
+		try {
+			Document tmpdoc = Jsoup.connect(link).userAgent("Mozilla").get();
+			if(tmpdoc != null){
+				
+			String[] titleStr = tmpdoc.title().split(" - ");
+			Elements ps = getContentText(tmpdoc);
+			
+			if(ps.size() != 0){
+				String fpara = ps.get(0).text();
+				if(fpara.contains("may refer to:"))
+					return "";
+			}
+			return titleStr[0];
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+		return "";
 	}
 
 	private boolean isExistWiki(Candidate candi, String acr) {
@@ -258,4 +302,5 @@ public class AnchorDataGenerator {
 			tts.put(text, paras);
 		}
 	}
+
 }

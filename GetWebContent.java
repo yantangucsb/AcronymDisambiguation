@@ -17,12 +17,13 @@ public class GetWebContent {
 //		AcronymGenerator ag = new AcronymGenerator();
 //		ag.getAcronyms();
 //		ExpansionGenerator eg = new ExpansionGenerator(3);
-//		AnchorDataGenerator adg = new AnchorDataGenerator();
-//		adg.getAnchorData();
+		AnchorDataGenerator adg = new AnchorDataGenerator();
+		adg.getAnchorData();
+//		adg.filterDic();
 //		WekaTrainDataGenerator wdg = new WekaTrainDataGenerator();
 //		wdg.getWekaTrainData();
-		wekaModel ml = new wekaModel();
-		ml.trainModel();
+//		wekaModel ml = new wekaModel();
+//		ml.trainModel();
 		
 		
 //		MainFrame mf = new MainFrame();

@@ -605,4 +605,30 @@ public class PrintDic{
 		}
 		
 	}
+
+	public static void printLog(String output, String filename) {
+		BufferedWriter writer = null;
+		try
+		{
+		    writer = new BufferedWriter( new FileWriter(filename));
+		    writer.write(output);
+		    writer.close();
+		    System.out.println("Success to file");
+
+		}
+		catch ( Exception e)
+		{
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
+	}
 }

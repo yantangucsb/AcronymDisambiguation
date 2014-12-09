@@ -46,9 +46,9 @@ public class wekaModel {
 			inst.add("300");
 			inst.add("5");
 			classcifyInstantce(inst);
-			eval.evaluateModel(nB, train);
-			System.out.println(eval.toSummaryString("\nResults\n*********\n", true));
-//			saveModel(nB, "wekaModel/nb.model");
+/*			eval.evaluateModel(nB, train);
+			System.out.println(eval.toSummaryString("\nResults\n*********\n", true));*/
+			saveModel(nB, "wekaModel/nb.model");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

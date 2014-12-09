@@ -23,6 +23,8 @@ public class MainFrame extends JFrame implements ActionListener{
 	JMenuItem runModel;
 	JMenuItem loadTestFile;
 	JMenuItem showDic;
+	JMenuItem loadCmpText;
+	JMenuItem cmpModel;
 
 	public MainFrame() {
 		init();
@@ -55,7 +57,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	private void addMenu() {
 		JMenu menu1 = new JMenu("Load Model");
 		JMenu menu2 = new JMenu("Test Model");
-		JMenu menu3 = new JMenu("Info");
+		JMenu menu3 = new JMenu("Compare Model");
 		menuBar.add(menu1);
 		menuBar.add(menu2);
 		menuBar.add(menu3);
@@ -64,7 +66,7 @@ public class MainFrame extends JFrame implements ActionListener{
 //		JMenuItem GeneTrainData = new JMenuItem("Generate Train Data");
 		runModel = new JMenuItem("Run Model");
 		runModel.setEnabled(false);
-		loadTestFile = new JMenuItem("Load Test Data");
+		loadTestFile = new JMenuItem("Load Test Text");
 		loadTestFile.setEnabled(false);
 		runModel.setEnabled(false);
 		menu1.add(loadModel);
@@ -75,9 +77,19 @@ public class MainFrame extends JFrame implements ActionListener{
 		runModel.addActionListener(this);
 		
 		showDic = new JMenuItem("Show Dic");
-		menu3.add(showDic);
+		menu1.add(showDic);
 		showDic.addActionListener(this);
 		showDic.setEnabled(false);
+		
+		loadCmpText = new JMenuItem("Load Test File");
+		menu3.add(loadCmpText);
+		loadCmpText.addActionListener(this);
+		loadCmpText.setEnabled(false);
+		
+		cmpModel = new JMenuItem("Compare Model");
+		menu3.add(cmpModel);
+		cmpModel.addActionListener(this);
+		cmpModel.setEnabled(false);
 
 	}
 
@@ -86,10 +98,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		if(e.getActionCommand().equals("Open File")){
 			System.out.println(e.getActionCommand()+" selected");
 			loadModel();
-			runModel.setEnabled(true);
-			loadTestFile.setEnabled(true);
-			showDic.setEnabled(true);
-		}else if(e.getActionCommand().equals("Load Test Data")){
+		}else if(e.getActionCommand().equals("Load Test Text")){
 			loadData();
 			
 		}else if(e.getActionCommand().equals("Run Model")){
@@ -102,8 +111,40 @@ public class MainFrame extends JFrame implements ActionListener{
 		}else if(e.getActionCommand().equals("Show Dic")) {
 			System.out.println(e.getActionCommand()+" selected");
 			showDic();
+		}else if(e.getActionCommand().equals("Load Test File")) {
+			loadDataFile();
+		}else if(e.getActionCommand().equals("Compare Model")) {
+			try {
+				compareModel();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		
+	}
+
+	private void loadDataFile() {
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showOpenDialog(this);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			System.out.println(file.getName() + ' ' + file.getPath());
+			try {
+				ModelTest.loadDataFile(file.getPath());
+//				inputBoard.setOutput(str);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			cmpModel.setEnabled(true);
+		}
+		
+	}
+
+	private void compareModel() throws Exception {
+		String output = ModelTest.compareModel();
+		outputBoard.setOutput(output);
 	}
 
 	private void showDic() {
@@ -146,6 +187,10 @@ public class MainFrame extends JFrame implements ActionListener{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			runModel.setEnabled(true);
+			loadTestFile.setEnabled(true);
+			showDic.setEnabled(true);
+			loadCmpText.setEnabled(true);
 		}
 	}
 
