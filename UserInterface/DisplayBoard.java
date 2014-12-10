@@ -50,10 +50,16 @@ public class DisplayBoard extends JPanel{
 		}
 		textArea.setText(strs);
 		int size = 0;
-		for(TargetText tt: ModelTest.tts) {
+		for(int i=0; i<ModelTest.tts.size(); i++) {
+			TargetText tt = ModelTest.tts.get(i);
 			for(int x: tt.getHighlightIndex()) {
 				textArea.getHighlighter().addHighlight(size+x, size+x+tt.getName().length(), 
 						new DefaultHighlighter.DefaultHighlightPainter(Color.gray));
+			}
+			if(i != ModelTest.tts.size()-1){
+				TargetText next = ModelTest.tts.get(i+1);
+				if(tt.getText().equals(next.getText()))
+					continue;
 			}
 			size += tt.getText().length();
 		}

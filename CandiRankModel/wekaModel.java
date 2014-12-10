@@ -48,7 +48,7 @@ public class wekaModel {
 			classcifyInstantce(inst);
 /*			eval.evaluateModel(nB, train);
 			System.out.println(eval.toSummaryString("\nResults\n*********\n", true));*/
-			saveModel(nB, "wekaModel/nb.model");
+			saveModel(nB, "wekaModel/nb2.model");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -69,7 +69,7 @@ public class wekaModel {
 	private void loadTrainData() {
 		BufferedReader breader = null;
 		try {
-			breader = new BufferedReader(new FileReader("wiki/weka.arff"));
+			breader = new BufferedReader(new FileReader("wiki/test2/weka.arff"));
 			train = new Instances(breader);
 			train.setClassIndex(train.numAttributes() - 1);
 			

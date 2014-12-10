@@ -23,10 +23,11 @@ public class AnchorDataGenerator {
 	
 	public AnchorDataGenerator() {
 		expansions = new HashMap<String, ArrayList<String>>();
-		PrintDic.loadExpansions(expansions, "wiki/testDic");
+		PrintDic.loadExpansions(expansions, "wiki/test2/testDic");
 		fullData = new ArrayList<WordDic>();
 		titles = new HashSet<String>();
 		tts = new HashMap<String, ArrayList<TargetText>>();
+
 	}
 	
 	public void getAnchorData() {
@@ -40,11 +41,63 @@ public class AnchorDataGenerator {
 				if(isExistWiki(curCandi, (String)pairs.getKey()))
 					wd.add2Expansions(curCandi);
 			}
-			if(wd.getExpansions().size() != 0)
+			if(wd.getExpansions().size() != 0){
 				fullData.add(wd);
+				PrintDic.printAnchorData(fullData, "wiki/test2/"+wd.getName());
+			}
 		}
 		PrintDic.printAnchorData(fullData, "wiki/anchorData2");
 		PrintDic.printTrainData(tts, "wiki/traindata2");
+	}
+	
+	public void regetAnchorData() {
+		PrintDic.loadDic(fullData, "wiki/test2/dic2");
+//		PrintDic.loadTrainData(tts, "wiki/traindata2");
+		System.out.println(fullData.size());
+		
+		Iterator<Entry<String, ArrayList<String>>> it = expansions.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry pairs = (Map.Entry)it.next();
+			ArrayList<String> candis = (ArrayList<String>) pairs.getValue();
+			String name = (String) pairs.getKey();
+			WordDic curwd = null;
+			for(WordDic wd: fullData){
+				if(wd.getName().equals(name)){
+					curwd = wd;
+					break;
+				}
+			}
+			if(curwd != null)
+				continue;
+			WordDic wd = new WordDic((String) pairs.getKey());
+			for(String candi: candis) {
+				Candidate curCandi = new Candidate(candi);
+				if(isExistWiki(curCandi, (String)pairs.getKey()))
+					wd.add2Expansions(curCandi);
+			}
+			if(wd.getExpansions().size() != 0){
+				fullData.add(wd);
+				PrintDic.printAnchorData(fullData, "wiki/test2/tmp1");
+				PrintDic.printTrainData(tts, "wiki/test2/trainDataTmp1");
+			}
+		}
+		PrintDic.printAnchorData(fullData, "wiki/anchorData3");
+		PrintDic.printTrainData(tts, "wiki/traindata3");
+	}
+	
+	public void generateTrainData() {
+		PrintDic.loadDic(fullData, "wiki/test2/dic2");
+		for(WordDic wd: fullData) {
+			Iterator<Entry<String, Candidate>> it = wd.getExpansions().entrySet().iterator();
+		    while (it.hasNext()) {
+		    	Map.Entry pairs = (Map.Entry)it.next();
+		    	Candidate candi = (Candidate) pairs.getValue();
+		    	for(String tt: candi.getAnchorText()) {
+		    		add2TrainData(wd.getName(), candi, tt, candi.getName());
+		    	}
+		    }
+		}
+		PrintDic.printTrainData(tts, "wiki/test2/trainData");
 	}
 	
 	public void filterDic() {
@@ -144,6 +197,7 @@ public class AnchorDataGenerator {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Get wiki page failure. " + acr + " " + candi.getName());
 			return false;
 		}
 		return false;
@@ -203,6 +257,7 @@ public class AnchorDataGenerator {
 		}catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Get wiki page View Num failure. " + candi.getName());
 			return false;
 		}
 		return true;
@@ -235,7 +290,7 @@ public class AnchorDataGenerator {
 				Elements lis = curEle.select("li");
 				for(Element li : lis){
 					String text = li.text();
-					if(text.contains("(redirect page)") || text.contains("User talk"))
+					if(!isGoodPage(text))
 						continue;
 					Elements as = li.select("a");
 					if(as.size() != 0){
@@ -248,7 +303,17 @@ public class AnchorDataGenerator {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Get what links here page failure. " + acr + " " + candi.getName());
 			return false;
+		}
+		return true;
+	}
+
+	private boolean isGoodPage(String text) {
+		String[] strs={"(redirect page)", "User talk:", "Talk:", "File:", "User:", "Wikipedia:"};
+		for(String str: strs){
+			if(text.contains(str))
+				return false;
 		}
 		return true;
 	}
@@ -283,15 +348,20 @@ public class AnchorDataGenerator {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Get achor data failure. " + acr + " " + candi.getName());
 		}
 		return;
 		
 	}
 	
 	private void add2TrainData(String text, Candidate candi, String para, String hyperlinkText) {
-		para = para.replace(hyperlinkText, text);
-		para = para.replace(candi.getTitle(), text);
+//		para = para.replace(hyperlinkText, text);
+//		System.out.println(para);
+//		para = para.replace(candi.getTitle(), text);
 		para = para.replace(candi.getName(), text);
+		if(para.length() == 0)
+			return;
+		
 		TargetText tt = new TargetText(text, candi.getName(), para);
 		
 		if(tts.containsKey(text)){

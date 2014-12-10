@@ -131,7 +131,8 @@ public class WordDic{
 		candi.setViewNum(Integer.parseInt(tmp[2]));
 		candi.setPrimeText(tmp[3]);
 		candi.setText(tmp[4]);
-		candi.setAnchorData(tmp[5]);
+		for(int i=5; i<tmp.length; i++)
+			candi.setAnchorData(tmp[i]);
 		expansions.put(candi.getName(), candi);
 	}
 

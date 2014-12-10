@@ -32,7 +32,6 @@ public class ModelTest {
 	public static String path = "";
 	
 	public static void init() {
-		PrintDic.loadWordDic(dic, "wiki/anchorData");
 		features.add(new TFIDFsim("textDistance", "numeric"));
 		features.add(new Popularity("wikiPopularity", "numeric"));
 		features.add(new NameCoverPercen("NameCoverPercentage", "numeric"));
@@ -65,7 +64,7 @@ public class ModelTest {
 	}
 
 	private static String getOutput() throws Exception {
-		String output = "Result***************";
+		String output = "Result***************\n";
 		
 		for(TargetText tt: tts){
 			ArrayList<ArrayList<String>> data = tt.getWekaData();
@@ -136,6 +135,13 @@ public class ModelTest {
 		return output;
 	}
 	public static String compareModel() throws Exception {
+		for(TargetText tt: tts){
+			tt.initWekaData(dic.get(tt.getName()));
+			for(Feature f: features){
+				f.setFeature(tt, dic.get(tt.getName()));
+			}
+		}
+		
 		String output = "\nTest file path: ";
 		output += path;
 		output += "\n\nTotal number of instantces: ";
@@ -178,12 +184,10 @@ public class ModelTest {
 		tts.clear();
 		path = filename;
 		PrintDic.loadTrainData(tts, filename);
-		for(TargetText tt: tts){
-			tt.initWekaData(dic.get(tt.getName()));
-			for(Feature f: features){
-				f.setFeature(tt, dic.get(tt.getName()));
-			}
-		}
+	}
+	public static void loadWordDic(String filename) {
+		PrintDic.loadWordDic(dic, filename);
+		
 	}
 
 }

@@ -154,7 +154,7 @@ public class PrintDic{
 //		        writer.write("\r\n");
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }
-		    System.out.println("Success to file");
+		    System.out.println("Success to file:" +filename);
 
 		}
 		catch ( Exception e)
@@ -183,6 +183,8 @@ public class PrintDic{
 	        while (line != null) {
 	        	String[] tmp = line.split(" ### ");
 	        	ArrayList<Candidate> al = new ArrayList<Candidate>();
+	        	if(tmp.length < 3)
+	        		continue;
 	        	TargetText tt = new TargetText(tmp[0], tmp[1], tmp[2]);
 	        	if(trainData.containsKey(tmp[0])){
 	        		trainData.get(tmp[0]).add(tt);
@@ -193,11 +195,12 @@ public class PrintDic{
 	        	}
 	            line = br.readLine();
 	        }
-	        System.out.println("Load training data successfully.");
+	        System.out.println("Load training data successfully: " + filename);
 
 		}
 		catch ( Exception e)
 		{
+			e.printStackTrace();
 			System.out.println("open training data file failed.");
 		}
 		finally
@@ -298,7 +301,8 @@ public class PrintDic{
 	        }
 	        br.close();
 		}catch(Exception e){
-			System.out.println("Load expansion file candis_A failed.");
+			e.printStackTrace();
+			System.out.println("Load expansion file failed: " + filename);
 		}finally
 		{
 		    try
@@ -328,7 +332,7 @@ public class PrintDic{
 		    }
 	    	writer.close();
 		}catch(Exception e){
-			System.out.println("Open and write expansion file candis_A failed.");
+			System.out.println("Open and write expansion file failed: " + filename);
 		}finally
 		{
 		    try
@@ -352,7 +356,7 @@ public class PrintDic{
 			}
 			writer.close();
 		}catch(Exception e){
-			System.out.println("Open and write waitWords file candis_A failed.");
+			System.out.println("Open and write waitWords file failed: " + filename);
 		}finally
 		{
 		    try
@@ -381,7 +385,7 @@ public class PrintDic{
 //		        it.remove(); // avoids a ConcurrentModificationException
 		    }
 		    writer.close();
-		    System.out.println("Success to file");
+		    System.out.println("Success to file: "+ filename);
 
 		}
 		catch ( Exception e)
@@ -412,7 +416,7 @@ public class PrintDic{
 		    	writer.write(wd.printData());
 		    }
 		    writer.close();
-		    System.out.println("Success to file");
+		    System.out.println("Success to file:" + filename);
 
 		}
 		catch ( Exception e)
@@ -445,7 +449,7 @@ public class PrintDic{
 	        	trainData.add(tt);
 	            line = br.readLine();
 	        }
-	        System.out.println("Load training data successfully.");
+	        System.out.println("Load training data successfully:"+filename);
 
 		}
 		catch ( Exception e)
@@ -477,6 +481,8 @@ public class PrintDic{
 	        	boolean included = false;
 	        	for(WordDic wd: dic){
 	        		if(wd.getName().equals(tmp[0])){
+	        			if(tmp.length < 5)
+	        				System.out.println(line);
 	        			wd.setData(tmp);
 	        			included = true;
 	        		}
@@ -487,11 +493,12 @@ public class PrintDic{
 	        	}
 	            line = br.readLine();
 	        }
-	        System.out.println("Load training data successfully.");
+	        System.out.println("Load training data successfully:"+ filename);
 
 		}
 		catch ( Exception e)
 		{
+			e.printStackTrace();
 			System.out.println("open training data file failed.");
 		}
 		finally
@@ -585,7 +592,7 @@ public class PrintDic{
 	        	}
 	            line = br.readLine();
 	        }
-	        System.out.println("Load training data successfully.");
+	        System.out.println("Load training data successfully:" +filename);
 
 		}
 		catch ( Exception e)
@@ -630,5 +637,34 @@ public class PrintDic{
 		    {
 		    }
 		}
+	}
+
+	public static void printTestCase(ArrayList<TargetText> tts, String filename) {
+		BufferedWriter writer = null;
+		try
+		{
+		    writer = new BufferedWriter( new FileWriter(filename));
+		    for(TargetText tt: tts){
+		    	writer.write(tt.getName() + " ### " + tt.getExpansion() + " ### " + tt.getText() +"\n");
+		    }
+		    writer.close();
+		    System.out.println("Success to file");
+
+		}
+		catch ( Exception e)
+		{
+		}
+		finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		    }
+		    catch ( Exception e)
+		    {
+		    }
+		}
+		
 	}
 }

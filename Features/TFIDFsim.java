@@ -16,7 +16,7 @@ import DicGenerator.PrintDic;
 import DicGenerator.WordDic;
 
 public class TFIDFsim extends Feature {
-	ArrayList<String> stopWords;
+	public static ArrayList<String> stopWords;
 	
 	public TFIDFsim() {
 		super();
@@ -37,13 +37,11 @@ public class TFIDFsim extends Feature {
 	@Override
 	public void setFeature(TargetText tt, WordDic worddic) {
 		HashMap<String, Double> idfs = new HashMap<String, Double>();
-		tt.tokenize(stopWords);
 		HashMap<String, Candidate> candis = worddic.getExpansions();
 		Iterator<Entry<String, Candidate>> it = candis.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
 			Candidate candi = (Candidate) pairs.getValue();
-			candi.tokenize(stopWords);
 			HashMap<String, Integer> tfs = candi.getTF();
 			Iterator<Entry<String, Integer>> TFit = tfs.entrySet().iterator();
 			while(TFit.hasNext()){

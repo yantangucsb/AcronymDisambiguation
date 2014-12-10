@@ -1,6 +1,7 @@
 package TextModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,19 +86,27 @@ public class TargetText extends TextBasicModel{
 		return text;
 	}
 	
-	public void tokenize(ArrayList<String> stopWords) {
-		this.tokenizeAndStem(text, stopWords);
+	public void tokenize() {
+		this.tokenizeAndStem(text);
 	}
 
 	public String printFeatures() {
 		String output = "";
+		boolean negativeCase = false;
 		for(ArrayList<String> al : trainDataWeka) {
-			for(int i=1; i<al.size(); i++)
-				output += al.get(i) + " ";
-			if(al.get(0).equals(this.expansion))
+			if(al.get(0).equals(this.expansion)){
+				for(int i=1; i<al.size(); i++)
+					output += al.get(i) + " ";
 				output += "yes\n";
-			else
+			}else{
+				if(negativeCase)
+					continue;
+				for(int i=1; i<al.size(); i++)
+					output += al.get(i) + " ";
 				output += "no\n";
+				negativeCase = true;
+			}
+				
 		}
 		return output;
 	}
@@ -121,6 +130,12 @@ public class TargetText extends TextBasicModel{
 	
 	public ArrayList<Integer> getHighlightIndex() {
 		return this.AcrIndex;
+	}
+
+	public HashMap<String, Integer> getTF() {
+		if(wordSum.isEmpty() || wordSum.size() ==0)
+			this.tokenize();
+		return wordSum;
 	}
 
 /*	public boolean getBestCandi(WordDic wd) {

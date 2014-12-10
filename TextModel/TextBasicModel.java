@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import Features.TFIDFsim;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.Morphology;
@@ -23,7 +24,7 @@ public abstract class TextBasicModel {
 		name = "";
 	}
 	
-	public void tokenizeAndStem(String text, ArrayList<String> stopWords) {
+	public void tokenizeAndStem(String text) {
 		Reader reader = new StringReader(text);
 		DocumentPreprocessor dp = new DocumentPreprocessor(reader);
 		Iterator<List<HasWord>> it = dp.iterator();
@@ -36,7 +37,7 @@ public abstract class TextBasicModel {
 				String word = wordStr.toString().toLowerCase();
 				//check word if it is legal
 				
-				if(stopWords.contains(word))
+				if(TFIDFsim.stopWords.contains(word))
 					continue;
 				if(word.length() == 1){
 					continue;
@@ -63,10 +64,6 @@ public abstract class TextBasicModel {
 		Pattern p = Pattern.compile("\\[(.)*\\]");
 		Matcher m = p.matcher(str);
 		return m.replaceAll("");
-	}
-
-	public HashMap<String, Integer> getTF() {
-		return wordSum;
 	}
 	
 	private void add2WordSum(String stemWord) {

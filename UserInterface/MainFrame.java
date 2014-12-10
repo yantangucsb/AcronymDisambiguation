@@ -25,6 +25,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	JMenuItem showDic;
 	JMenuItem loadCmpText;
 	JMenuItem cmpModel;
+	JMenuItem loadDic;
 
 	public MainFrame() {
 		init();
@@ -63,14 +64,20 @@ public class MainFrame extends JFrame implements ActionListener{
 		menuBar.add(menu3);
 		
 		loadModel = new JMenuItem("Open File");
+		loadDic = new JMenuItem("Load Dic");
 //		JMenuItem GeneTrainData = new JMenuItem("Generate Train Data");
 		runModel = new JMenuItem("Run Model");
 		runModel.setEnabled(false);
 		loadTestFile = new JMenuItem("Load Test Text");
 		loadTestFile.setEnabled(false);
 		runModel.setEnabled(false);
+		
 		menu1.add(loadModel);
 		loadModel.addActionListener(this);
+		loadDic.addActionListener(this);
+		menu1.add(loadDic);
+		loadDic.setEnabled(false);
+		
 		menu2.add(loadTestFile);
 		menu2.add(runModel);
 		loadTestFile.addActionListener(this);
@@ -98,7 +105,11 @@ public class MainFrame extends JFrame implements ActionListener{
 		if(e.getActionCommand().equals("Open File")){
 			System.out.println(e.getActionCommand()+" selected");
 			loadModel();
-		}else if(e.getActionCommand().equals("Load Test Text")){
+		}else if(e.getActionCommand().equals("Load Dic")){
+			loadWordDic();
+			
+		}
+		else if(e.getActionCommand().equals("Load Test Text")){
 			loadData();
 			
 		}else if(e.getActionCommand().equals("Run Model")){
@@ -121,6 +132,28 @@ public class MainFrame extends JFrame implements ActionListener{
 				e1.printStackTrace();
 			}
 		}
+		
+	}
+
+	private void loadWordDic() {
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showOpenDialog(this);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+//			System.out.println(file.getName() + ' ' + file.getPath());
+			try {
+				ModelTest.loadWordDic(file.getPath());
+//				inputBoard.setOutput(str);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			runModel.setEnabled(true);
+			loadTestFile.setEnabled(true);
+			showDic.setEnabled(true);
+			loadCmpText.setEnabled(true);
+		}
+		
 		
 	}
 
@@ -187,10 +220,7 @@ public class MainFrame extends JFrame implements ActionListener{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			runModel.setEnabled(true);
-			loadTestFile.setEnabled(true);
-			showDic.setEnabled(true);
-			loadCmpText.setEnabled(true);
+			loadDic.setEnabled(true);
 		}
 	}
 

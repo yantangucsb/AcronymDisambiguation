@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import Features.Feature;
+import Features.TFIDFsim;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.Morphology;
@@ -20,6 +21,7 @@ public class Candidate extends TextBasicModel{
 	ArrayList<String> anchorText;
 	int viewNum;
 	double dl;
+	int testCaseNum;
 	
 	public Candidate(String attr) {
 		super();
@@ -38,6 +40,7 @@ public class Candidate extends TextBasicModel{
 		title = "";
 		primeText = "";
 		viewNum = 0;
+		testCaseNum = 0;
 	}
 	
 	public Candidate(String str1, String str2) {
@@ -48,6 +51,14 @@ public class Candidate extends TextBasicModel{
 /*	public ArrayList<String> getFeature() {
 		return features;
 	}*/
+	
+	public void increaseTestCaseNum() {
+		testCaseNum += 1;
+	}
+	
+	public int getTestCaseNum() {
+		return this.testCaseNum;
+	}
 
 	public void setName(String text) {
 		name = text;
@@ -114,10 +125,10 @@ public class Candidate extends TextBasicModel{
 		return this.viewNum;
 	}
 	
-	public void tokenize(ArrayList<String> stopWords) {
-		this.tokenizeAndStem(text, stopWords);
+	public void tokenize() {
+		this.tokenizeAndStem(text);
 		for(String str : this.anchorText){
-			this.tokenizeAndStem(str, stopWords);
+			this.tokenizeAndStem(str);
 		}
 		
 	}
@@ -133,6 +144,12 @@ public class Candidate extends TextBasicModel{
 			dl += str.length();
 		}
 		return dl;
+	}
+	
+	public HashMap<String, Integer> getTF() {
+		if(wordSum.isEmpty() || wordSum.size() == 0)
+			this.tokenize();
+		return wordSum;
 	}
 
 }
