@@ -27,11 +27,11 @@ public class WekaTrainDataGenerator {
 		dic = new ArrayList<WordDic>();
 		features = new ArrayList<Feature>();
 		addExistFeatures();
-//		RandomGenerateTrainData();
-		preprocessTrainData();
+		RandomGenerateTrainData();
+//		preprocessTrainData();
 		
 		
-		PrintDic.loadDic(dic, "wiki/test2/anchordata3");
+		PrintDic.loadDic(dic, "wiki/test3/anchorData3");
 //		preprocessDic();
 	}
 	
@@ -60,14 +60,14 @@ public class WekaTrainDataGenerator {
 
 	public void RandomGenerateTrainData() {
 		ArrayList<TargetText> tts = new ArrayList<TargetText>();
-		PrintDic.loadTrainData(tts, "wiki/test2/trainData");
-		while(trainData.size() < 100) {
+		PrintDic.loadTrainData(tts, "wiki/test3/trainDataFull");
+		while(trainData.size() < 500) {
 			Random r = new Random();
 			int i = r.nextInt(tts.size());
 			trainData.add(tts.get(i));
 			tts.remove(i);
 		}
-		PrintDic.printTestCase(trainData, "wiki/test2/testInstances1");
+		PrintDic.printTestCase(trainData, "wiki/test3/trainData");
 	}
 
 	private void addExistFeatures() {
@@ -144,7 +144,7 @@ public class WekaTrainDataGenerator {
 //	    	System.out.println(wd.printData());
 	    	output += tt.printFeatures();
 	    }
-		PrintDic.printWekafile(output, "wiki/test2/weka.arff");
+		PrintDic.printWekafile(output, "wiki/test3/weka.arff");
 		
 	}
 

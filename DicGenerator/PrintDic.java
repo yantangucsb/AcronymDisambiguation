@@ -454,6 +454,7 @@ public class PrintDic{
 		}
 		catch ( Exception e)
 		{
+			e.printStackTrace();
 			System.out.println("open training data file failed.");
 		}
 		finally

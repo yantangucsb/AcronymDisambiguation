@@ -117,10 +117,7 @@ public class DiscrimitveKeyWords extends Feature{
 			String tagged = tagger.tagString(text);
 			return tagged;
 			
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
