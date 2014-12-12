@@ -24,8 +24,8 @@ public class GetWebContent {
 //		adg.filterDic();
 		WekaTrainDataGenerator wdg = new WekaTrainDataGenerator();
 		wdg.getWekaTrainData();
-//		wekaModel ml = new wekaModel();
-//		ml.trainModel();
+		wekaModel ml = new wekaModel();
+		ml.trainModel();
 		
 		
 //		MainFrame mf = new MainFrame();

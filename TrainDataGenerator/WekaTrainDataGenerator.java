@@ -61,13 +61,13 @@ public class WekaTrainDataGenerator {
 	public void RandomGenerateTrainData() {
 		ArrayList<TargetText> tts = new ArrayList<TargetText>();
 		PrintDic.loadTrainData(tts, "wiki/test3/trainDataFull");
-		while(trainData.size() < 500) {
+		while(trainData.size() < 100) {
 			Random r = new Random();
 			int i = r.nextInt(tts.size());
 			trainData.add(tts.get(i));
 			tts.remove(i);
 		}
-		PrintDic.printTestCase(trainData, "wiki/test3/trainData");
+//		PrintDic.printTestCase(trainData, "wiki/test3/test3");
 	}
 
 	private void addExistFeatures() {
@@ -144,7 +144,7 @@ public class WekaTrainDataGenerator {
 //	    	System.out.println(wd.printData());
 	    	output += tt.printFeatures();
 	    }
-		PrintDic.printWekafile(output, "wiki/test3/weka.arff");
+		PrintDic.printWekafile(output, "wiki/test3/weka4.arff");
 		
 	}
 
