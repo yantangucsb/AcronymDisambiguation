@@ -57,9 +57,11 @@ public class ModelTest {
 		for(String str : strs){
 			testData.add(str);
 		}
+//		System.out.println(text);
 		for(String str : testData) {
 			getDic(str);
 		}
+//		System.out.println("getDic completed.");
 		return getOutput();
 	}
 
@@ -115,7 +117,7 @@ public class ModelTest {
 
 	private static void GenerateTT(String str, WordDic wd) {
 		TargetText tt = new TargetText(wd.getName(), "", str);
-		tt.setHighlightIndex();
+//		tt.setHighlightIndex();
 		tt.initWekaData(wd);
 		for(Feature f: features){
 			f.setFeature(tt, wd);

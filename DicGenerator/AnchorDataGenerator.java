@@ -50,6 +50,23 @@ public class AnchorDataGenerator {
 		PrintDic.printTrainData(tts, "wiki/traindata2");
 	}
 	
+	//have acr ex text and regenerate anchor paras
+	public void getAnchorParas() {
+		PrintDic.loadDic(fullData, "wiki/test2/dic2");
+		for(WordDic wd : fullData) {
+			Iterator<Entry<String, Candidate>> it = wd.getExpansions().entrySet().iterator();
+			titles.clear();
+			while(it.hasNext()){
+				Map.Entry pairs = (Map.Entry)it.next();
+				Candidate candi = (Candidate) pairs.getValue();
+				candi.getAnchorText().clear();
+				isExistWiki(candi, wd.getName());
+			}
+			PrintDic.printAnchorData(fullData, "wiki/test2/anchorData3");
+			PrintDic.printTrainData(tts, "wiki/test2/traindata3");
+		}
+	}
+	
 	public void regetAnchorData() {
 		PrintDic.loadDic(fullData, "wiki/test2/dic2");
 //		PrintDic.loadTrainData(tts, "wiki/traindata2");
@@ -86,7 +103,7 @@ public class AnchorDataGenerator {
 	}
 	
 	public void generateTrainData() {
-		PrintDic.loadDic(fullData, "wiki/test2/dic2");
+		PrintDic.loadDic(fullData, "wiki/test2/anchorData3");
 		for(WordDic wd: fullData) {
 			Iterator<Entry<String, Candidate>> it = wd.getExpansions().entrySet().iterator();
 		    while (it.hasNext()) {
@@ -97,7 +114,7 @@ public class AnchorDataGenerator {
 		    	}
 		    }
 		}
-		PrintDic.printTrainData(tts, "wiki/test2/trainData");
+		PrintDic.printTrainData(tts, "wiki/test2/trainData4");
 	}
 	
 	public void filterDic() {
@@ -108,7 +125,7 @@ public class AnchorDataGenerator {
 			ArrayList<String> candis = (ArrayList<String>) pairs.getValue();
 			for(String candi: candis) {
 				Candidate curCandi = new Candidate(candi);
-				String name = getWikiPage(curCandi, (String)pairs.getKey());
+				String name = getWikiTitle(curCandi, (String)pairs.getKey());
 				if(name.equals(candi))
 					continue;
 				String str = (String)pairs.getKey() + " ### " + candi + " ### " + name + '\n';
@@ -119,7 +136,7 @@ public class AnchorDataGenerator {
 		PrintDic.printLog(output, "tmplog");
 	}
 
-	private String getWikiPage(Candidate candi, String key) {
+	private String getWikiTitle(Candidate candi, String key) {
 		String name = candi.getName().replaceAll(" ", "_");
 		String link = "http://en.wikipedia.org/wiki/Special:Search/" + name;
 		try {
@@ -157,7 +174,7 @@ public class AnchorDataGenerator {
 					titles.add(tmpdoc.title());
 				String[] titleStr = tmpdoc.title().split(" - ");
 				candi.setTitle(titleStr[0]);
-				Elements ps = getContentText(tmpdoc);
+/*				Elements ps = getContentText(tmpdoc);
 				
 				if(ps.size() != 0){
 					String fpara = ps.get(0).text();
@@ -169,7 +186,7 @@ public class AnchorDataGenerator {
 					if(p.text().length() == 0)
 						continue;
 					candi.setText(p.text() + " ");
-				}
+				}*/
 				Elements lis = tmpdoc.select("li");
 				for(Element li : lis){
 					if(li.text().equals("What links here")){
@@ -181,7 +198,7 @@ public class AnchorDataGenerator {
 						}
 					}
 					
-					if(li.text().equals("Page information")){
+/*					if(li.text().equals("Page information")){
 						Elements as = li.select("a");
 						if(as.size() != 0) {
 							String anchorLink = as.get(0).attr("href");
@@ -189,7 +206,7 @@ public class AnchorDataGenerator {
 								return false;
 						}
 						
-					}
+					}*/
 				}
 				return true;
 			}
@@ -229,6 +246,7 @@ public class AnchorDataGenerator {
 		case "p": return true;
 		case "a": return true;
 		case "b": return true;
+		case "i": return true;
 		default: return false;
 		}
 	}
@@ -325,10 +343,13 @@ public class AnchorDataGenerator {
 			if(tmpdoc != null){
 				Elements ps = getContentText(tmpdoc);
 				for(Element p: ps){
-					Elements as = p.select("a");
+					Elements as = p.children();
+//					Elements as = p.select("a");
 					boolean containKeyword = false;
 					String hyperlinkText = "";
 					for(Element a : as){
+						if(!a.tagName().equals("a"))
+							continue;
 						String title = a.attr("title");
 						if(title.equals(candi.getTitle()) || title.equals(acr)){
 							containKeyword = true;
@@ -355,9 +376,9 @@ public class AnchorDataGenerator {
 	}
 	
 	private void add2TrainData(String text, Candidate candi, String para, String hyperlinkText) {
-//		para = para.replace(hyperlinkText, text);
+		para = para.replace(hyperlinkText, text);
 //		System.out.println(para);
-//		para = para.replace(candi.getTitle(), text);
+		para = para.replace(getWikiTitle(candi, text), text);
 		para = para.replace(candi.getName(), text);
 		if(para.length() == 0)
 			return;

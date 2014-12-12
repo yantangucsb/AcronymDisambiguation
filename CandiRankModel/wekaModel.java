@@ -158,9 +158,9 @@ public class wekaModel {
 		train.add(inst);
 		double classifIndex = nB.classifyInstance(train.lastInstance());
 		double[] classif = nB.distributionForInstance(train.lastInstance());
-		for(double x: classif)
-			System.out.println(x);
-		System.out.println(classifIndex);
+//		for(double x: classif)
+//			System.out.println(x);
+//		System.out.println(classifIndex);
 		return classif[0];
 	}
 }

@@ -27,11 +27,37 @@ public class WekaTrainDataGenerator {
 		dic = new ArrayList<WordDic>();
 		features = new ArrayList<Feature>();
 		addExistFeatures();
-		RandomGenerateTrainData();
+//		RandomGenerateTrainData();
+		preprocessTrainData();
 		
-		PrintDic.loadDic(dic, "wiki/test2/dic2");
+		
+		PrintDic.loadDic(dic, "wiki/test2/anchordata3");
+//		preprocessDic();
 	}
 	
+	private void preprocessTrainData() {
+		ArrayList<TargetText> tts = new ArrayList<TargetText>();
+		PrintDic.loadTrainData(tts, "wiki/test2/trainData");
+		for(TargetText tt: tts) {
+//			System.out.println(tt.getExpansion());
+			tt.tokenize();
+		}
+		
+	}
+
+	private void preprocessDic() {
+		for(WordDic wd : dic) {
+			Iterator<Entry<String, Candidate>> it = wd.getExpansions().entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry pairs = (Map.Entry)it.next();
+				Candidate candi = (Candidate) pairs.getValue();
+//				System.out.println(candi.getName());
+				candi.tokenize();
+			}
+		}
+		
+	}
+
 	public void RandomGenerateTrainData() {
 		ArrayList<TargetText> tts = new ArrayList<TargetText>();
 		PrintDic.loadTrainData(tts, "wiki/test2/trainData");
@@ -41,7 +67,7 @@ public class WekaTrainDataGenerator {
 			trainData.add(tts.get(i));
 			tts.remove(i);
 		}
-		PrintDic.printTestCase(trainData, "wiki/test2/testInstances");
+		PrintDic.printTestCase(trainData, "wiki/test2/testInstances1");
 	}
 
 	private void addExistFeatures() {

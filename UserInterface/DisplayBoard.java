@@ -49,19 +49,29 @@ public class DisplayBoard extends JPanel{
 			strs += str +"\n";
 		}
 		textArea.setText(strs);
-		int size = 0;
+//		int size = 0;
 		for(int i=0; i<ModelTest.tts.size(); i++) {
 			TargetText tt = ModelTest.tts.get(i);
-			for(int x: tt.getHighlightIndex()) {
+			String text= textArea.getText();
+			int index = 0;
+			while(index >= 0 && index < text.length()) {
+				index = text.indexOf(tt.getName(), index);
+				if(index >= 0){
+					textArea.getHighlighter().addHighlight(index, index+tt.getName().length(), 
+							new DefaultHighlighter.DefaultHighlightPainter(Color.gray));
+					index += tt.getName().length();
+				}
+			}
+/*			for(int x: tt.getHighlightIndex()) {
 				textArea.getHighlighter().addHighlight(size+x, size+x+tt.getName().length(), 
 						new DefaultHighlighter.DefaultHighlightPainter(Color.gray));
-			}
+			}*/
 			if(i != ModelTest.tts.size()-1){
 				TargetText next = ModelTest.tts.get(i+1);
 				if(tt.getText().equals(next.getText()))
 					continue;
 			}
-			size += tt.getText().length();
+//			size += tt.getText().length();
 		}
 	}
 

@@ -11,7 +11,7 @@ import Features.*;
 
 public class TargetText extends TextBasicModel{
 	String expansion;
-	ArrayList<Integer> AcrIndex;
+//	ArrayList<Integer> AcrIndex;
 //	WordDic worddic;
 	
 	private ArrayList<ArrayList<String>> trainDataWeka;
@@ -115,7 +115,7 @@ public class TargetText extends TextBasicModel{
 		return this.trainDataWeka;
 	}
 
-	public void setHighlightIndex() {
+/*	public void setHighlightIndex() {
 		if(AcrIndex == null){
 			AcrIndex = new ArrayList<Integer>();
 		}
@@ -126,11 +126,11 @@ public class TargetText extends TextBasicModel{
 			index = this.text.indexOf(name, index + 1);
 		}
 		
-	}
+	}*/
 	
-	public ArrayList<Integer> getHighlightIndex() {
-		return this.AcrIndex;
-	}
+//	public ArrayList<Integer> getHighlightIndex() {
+//		return this.AcrIndex;
+//	}
 
 	public HashMap<String, Integer> getTF() {
 		if(wordSum.isEmpty() || wordSum.size() ==0)

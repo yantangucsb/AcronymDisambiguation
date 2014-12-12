@@ -17,8 +17,9 @@ public class GetWebContent {
 //		AcronymGenerator ag = new AcronymGenerator();
 //		ag.getAcronyms();
 //		ExpansionGenerator eg = new ExpansionGenerator(3);
-//		AnchorDataGenerator adg = new AnchorDataGenerator();
-//		adg.generateTrainData();
+		AnchorDataGenerator adg = new AnchorDataGenerator();
+//		adg.getAnchorParas();
+		adg.generateTrainData();
 //		adg.regetAnchorData();
 //		adg.filterDic();
 //		WekaTrainDataGenerator wdg = new WekaTrainDataGenerator();
@@ -27,7 +28,7 @@ public class GetWebContent {
 //		ml.trainModel();
 		
 		
-		MainFrame mf = new MainFrame();
-		mf.setVisible(true);
+//		MainFrame mf = new MainFrame();
+//		mf.setVisible(true);
 	}
 }
