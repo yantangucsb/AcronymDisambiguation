@@ -378,7 +378,9 @@ public class AnchorDataGenerator {
 	private void add2TrainData(String text, Candidate candi, String para, String hyperlinkText) {
 		para = para.replace(hyperlinkText, text);
 //		System.out.println(para);
-		para = para.replace(getWikiTitle(candi, text), text);
+		String title = getWikiTitle(candi, text);
+		if(title.length() != 0)
+			para = para.replace(title, text);
 		para = para.replace(candi.getName(), text);
 		if(para.length() == 0)
 			return;
